@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
+import { readCart } from '../services/cart.js'
 
 export default function Navbar(){
   const { user, logout, hasRole } = useAuth()
@@ -8,10 +9,10 @@ export default function Navbar(){
   const navigate = useNavigate()
 
   useEffect(()=>{
-    const load = ()=>{
-      const cart = JSON.parse(localStorage.getItem('cart')||'[]')
-      setCartCount(cart.reduce((a,i)=>a+i.qty,0))
-    }
+const load = ()=> {
+  const cart = readCart()
+  setCartCount(cart.reduce((a,i)=>a+i.qty,0))
+}
     load()
     const i = setInterval(load, 500)
     return ()=>clearInterval(i)

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { api } from '../services/api.js'
+import { onUserChange } from '../services/cart.js'
 
 const AuthContext = createContext(null)
 export const useAuth = () => useContext(AuthContext)
@@ -24,13 +25,21 @@ export function AuthProvider({ children }){
 
   const login = async (email,password)=>{
     const d = await api('/auth/login',{method:'POST', body:JSON.stringify({email,password})})
-    setToken(d.token); setUser(d.user); return d.user
+    setToken(d.token); setUser(d.user);
+    onUserChange(d.user.id);                   // ⬅️ activa carrito del usuario y borra el anónimo
+    return d.user
   }
   const register = async (payload)=>{
     const d = await api('/auth/register',{method:'POST', body:JSON.stringify(payload)})
-    setToken(d.token); setUser(d.user); return d.user
+    setToken(d.token); setUser(d.user);
+    onUserChange(d.user.id);                   // ⬅️ idem
+    return d.user
   }
-  const logout = ()=>{ setToken(null); setUser(null); }
+
+  const logout = ()=>{
+    setToken(null); setUser(null);
+    onUserChange(null);                        // ⬅️ vuelve a carrito anónimo (vacío)
+  }
 
   const hasRole = (...roles)=> user && roles.includes(user.role)
 

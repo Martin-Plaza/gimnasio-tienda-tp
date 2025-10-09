@@ -1,12 +1,18 @@
 import { useState } from 'react'
 import { api } from '../services/api.js'
+import { readCart, clearCart } from '../services/cart.js'
 
 export default function Checkout(){
   const [address, setAddress] = useState('')
   const [msg, setMsg] = useState(null)
   const [error, setError] = useState(null)
-  const cart = JSON.parse(localStorage.getItem('cart')||'[]')
+
+  /*const cart = JSON.parse(localStorage.getItem('cart')||'[]')
+  const total = cart.reduce((a,i)=>a + i.price*i.qty, 0)*/
+
+  const cart = readCart()                                  
   const total = cart.reduce((a,i)=>a + i.price*i.qty, 0)
+
 
   const submit = async (e)=>{
     e.preventDefault()
@@ -19,13 +25,15 @@ export default function Checkout(){
     try{
       const order = await api('/orders', {
         method:'POST',
-        body: JSON.stringify({ items: cart.map(c=>({product_id:c.product_id, qty:c.qty})), address })
+        body: JSON.stringify({
+          items: cart.map(c=>({ product_id:c.product_id, qty:c.qty })),
+          address
+        })
       })
-      localStorage.removeItem('cart')
+      clearCart()                                          
       setMsg(`Orden #${order.id} creada correctamente`)
     }catch(e){ setError(e.message) }
   }
-
   return (
     <div>
       <h1>Checkout</h1>

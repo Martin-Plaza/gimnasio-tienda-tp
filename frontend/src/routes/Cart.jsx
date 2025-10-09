@@ -1,29 +1,25 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { readCart, saveCart, clearCart } from '../services/cart.js'
 
 export default function Cart(){
   const [cart, setCart] = useState([])
+  useEffect(()=>{ setCart(readCart()) },[])
 
-  const load = ()=>{
-    setCart(JSON.parse(localStorage.getItem('cart')||'[]'))
-  }
+  const sync = (next)=>{ setCart(next); saveCart(next) }
 
-  useEffect(()=>{ load() },[])
-
-  const updateQty = (idx, qty)=>{
-    const next = [...cart]
-    next[idx].qty = Math.max(1, Number(qty)||1)
-    setCart(next)
-    localStorage.setItem('cart', JSON.stringify(next))
-  }
-  const removeItem = (idx)=>{
-    const next = cart.filter((_,i)=>i!==idx)
-    setCart(next)
-    localStorage.setItem('cart', JSON.stringify(next))
-  }
-  const clear = ()=>{
-    localStorage.removeItem('cart'); setCart([])
-  }
+const updateQty = (idx, qty)=>{
+  const next = [...cart]
+  next[idx].qty = Math.max(1, Number(qty)||1)
+  sync(next)
+}
+const removeItem = (idx)=>{
+  const next = cart.filter((_,i)=>i!==idx)
+  sync(next)
+}
+const clear = ()=>{
+  clearCart(); setCart([])
+}
 
   const total = cart.reduce((a,i)=>a + i.price*i.qty, 0)
 

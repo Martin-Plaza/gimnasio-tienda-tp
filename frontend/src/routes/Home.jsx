@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../services/api.js'
 import ProductCard from '../components/ProductCard.jsx'
+import { readCart, saveCart } from '../services/cart.js'
 
 export default function Home(){
   const [q, setQ] = useState('')
@@ -13,14 +14,14 @@ export default function Home(){
       .catch(e=>setError(e.message))
   },[])
 
-  const addToCart = (p)=>{
-    const cart = JSON.parse(localStorage.getItem('cart')||'[]')
-    const idx = cart.findIndex(i=>i.product_id===p.id)
-    if(idx>=0){ cart[idx].qty = Math.min(cart[idx].qty+1, p.stock) }
-    else { cart.push({product_id:p.id, name:p.name, price:p.price, qty:1}) }
-    localStorage.setItem('cart', JSON.stringify(cart))
-    alert('Agregado al carrito')
-  }
+const addToCart = (p)=>{
+  const cart = readCart()
+  const idx = cart.findIndex(i=>i.product_id===p.id)
+  if(idx>=0){ cart[idx].qty = Math.min(cart[idx].qty+1, p.stock) }
+  else { cart.push({product_id:p.id, name:p.name, price:p.price, qty:1}) }
+  saveCart(cart)
+  alert('Agregado al carrito')
+}
 
   const filtered = products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()))
 
