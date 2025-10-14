@@ -1,36 +1,46 @@
-import { useEffect, useState } from 'react'
-import { api } from '../services/api.js'
+import { useEffect, useState } from 'react';
+import { api } from '../services/api.js';
+
+const fmtDate = (s) => {
+  const d = new Date(s);
+  return isNaN(d) ? '—' : d.toLocaleString('es-AR');
+};
+const fmtMoney = (n) => isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`;
 
 export default function MyOrders(){
-  const [orders, setOrders] = useState([])
-  const [error, setError] = useState(null)
+  const [rows, setRows] = useState([]);
+  const [err, setErr] = useState(null);
 
   useEffect(()=>{
-    api('/orders/mine')
-      .then(setOrders)
-      .catch(e=>setError(e.message))
-  },[])
+    (async()=>{
+      try { setRows(await api('/orders/mine')); }
+      catch(e){ setErr(e.message); }
+    })();
+  },[]);
 
   return (
     <div>
       <h1>Mis Órdenes</h1>
-      {error && <p className="error">{error}</p>}
-      {!orders.length && <p className="help">No tenés órdenes.</p>}
-      {!!orders.length && (
+      {err && <p className="error">{err}</p>}
+      {!rows.length ? (
+        <p className="help">No tenés órdenes todavía.</p>
+      ) : (
         <table className="table">
-          <thead><tr><th>ID</th><th>Fecha</th><th>Estado</th><th>Total</th></tr></thead>
+          <thead>
+            <tr><th>ID</th><th>Fecha</th><th>Estado</th><th>Total</th></tr>
+          </thead>
           <tbody>
-            {orders.map(o=>(
+            {rows.map(o=>(
               <tr key={o.id}>
-                <td>#{o.id}</td>
-                <td>{new Date(o.created_at).toLocaleString()}</td>
-                <td><span className="badge">{o.status}</span></td>
-                <td>${Number(o.total).toFixed(2)}</td>
+                <td>{o.id}</td>
+                <td>{fmtDate(o.date)}</td>
+                <td>{o.status || '—'}</td>
+                <td>{fmtMoney(o.total)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
     </div>
-  )
+  );
 }

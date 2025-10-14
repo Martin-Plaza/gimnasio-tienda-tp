@@ -1,29 +1,69 @@
-export const productsMem = [
-  { id:1, name:'Mancuernas 5kg', price:25.5, stock:12, image_url:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhITEhAVFhUVFRUQFRcXFhUSEBASFRUWFhUYFRMYHSggGBonGxYVITEiJSkrLi4uFx8zODMtNygtLisBCgoKDg0NFQ8PFSsZFxktLSstKystLS0rKystNys3LS0tLSstNystKysrNzcrLS0tKysrLS0rLS0rLS0rNy0rK//AABEIAOEA4QMBIgACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAAAwIEBQYHAQj/xAA+EAACAQICBwUFBgUDBQAAAAAAAQIDEQQhBQYSMUFRgRMiYXGRBzJCobEUI8HR4fBSYnKC8TNzkkNTg6LC/8QAFwEBAQEBAAAAAAAAAAAAAAAAAAECA//EABgRAQEBAQEAAAAAAAAAAAAAAAABEQIS/9oADAMBAAIRAxEAPwDuIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaZrN7RMNhrwpff1VlaL+6g/5qn4K/QDcKtWMU5SkoxSu22lFLm29xrtLXzR0qjp/aoprLaalGlLyqNbL9TjWsWtGKxr++qd1O6px7tKP9vF+LuzCNmvLOvqKjVjJKUZKSeaaacX5NFZ8y6M0ziMM9qhXnTe+0X3X5wfdl1TN30N7Wa8LLE0Y1V/FD7qp6ZxfyHlddjBrGhdfMBibKNdU5v4Kv3cr8k33X0bNmTMq9AAAAAAAAAAAAAAAAAAAAAAAAAAAAxusOl4YWhOrLOytGP8c37sf3wTA0r2vay9lQlhaUrTqJdq1vjTb93zkr38PM4lCvJbn04Gw62Ymc+/OV51Jucn42fy3Gss6ZjOruOLXFfkSqSe5mNbCYRkmuR7Es44hrfn5k8J7SuBNtG/eyLWKUMT9mnUbp1k4wTleNOrG7WyuF0pLLjY506ibcWs7X8H5cyPQuJlQqrYdpQnGrDwlBpr6RfqSj6yBZ6H0hHEUKVaO6pCM/K6zXR3XQvDDYAAAAAAAAAAAAAAAAAAAAAAAAcj13059pruMXelSvCHKcvin+C8F4nVcdRc6dSCdnKEoJ8nKLSZ85adxjpJ09081JcY2yfXea5SsVrFjtuSUX3Y/N8WYntGVzdyC/5GmUu0mVOSSzIGRTIqqpUbMho6pk1yz6GLRcYWrsyT6PyCsnVp96MuTt53y6/qR4+Gw41Fw3+X+L+qLyEdqLXgU1YqVNrPjHPfdbn8rlZdg9i+mNujVwzedN9rT/ANufvJeUs/7zpJ81+zfTf2XF0ZydoqXY1P8Aanln5Oz/ALD6UMVqAAIoAAAAAAAAAeSkkrt5LPwSA9IcVioUoudScYRW+UpKMV5t5Gka0e03D0NqGGSr1FldO1CD8Z/H5Ry8Ucn03p/E4ue1iKrnZ3Ufdp0/6YLJee/m2WRNfSNCtGcVKElKLzTi1KLXg1vJD5o0Pp7E4WW1h68qed2k705f1U3eL9Do2r/tag7RxlLZf/cpJyj5ypvvLpfyGGuogstF6WoYmG3QrQqR5xd2vCS3xfgy9IoAUuQFR8+e2LQrw+OlUS7mIj20eSmu7UXraX953jG6QhSV5S6b2+hrmmcDHSEYuphk40m5Q21ldqze/wCXkWJXDdVND4evt1MXi44ejDLhKvWla+zThnksrys1mlztd19TqdZVamDxG3CCvszajOfgnZJStwdr7lc6bpjV6lOEW8HTioLZ24x2ZX4Z8fmc207jcNg6yUKNSr70aiqN06dS6taEYZ5XTUm3mk8jbLTcRTdN2knbg+ZA5Jmd15wmKpzpPFSjJypU5QceMIrYW0rZS7rvbe8+JrUWRpcIqRHTZJcDNaNrXS/4suasbSa4SV+q3+St9TD4CraVuf1Mqtqbt0y3vrwKytlH71te642lyv8Av6s+lNR8dOvgMNUmntOnsu++Ww3Da67N+pyfUTU54qqttfdQs523eEVzk/l6HcqNKMYxjFJRilFJZJJZJJGemorABlQAAAAAAKZzSTbdkldvgkt7YGva6a4UdHU4yqJznUuqdOOTls73KXwxV1nnv3M4zrDrti8bdTq7FJ/9Kn3adv5nvn1dstyIvaVpt4vF7fwKLjTXKntNJ9bN9TU4ytuNyM2shc82i2jieaJI1U9xRI2eXCYsBPg8ZUpTU6VScJrdKEnGS6rh4HQNXfaxXp2ji4KtH+ONoVkvFZRl/wCpzWVRIt8RiFHOT6DB9Q6C1iw2MpdtQqqUU9mV04zhLlKLzT+vA9xuKqSTVJJeL39EcD1D0sqGKhty+6qPYqLhZ7m1xs7PyvzO1VMZLuqUXTp890pR5xuZwXGHwcId+q9ue/PNIhx+kZT7seiRZ4PSixVSVOlDZhTSV5f6lS7d3bgsvmTYrE06PdS26n8KzfV8EFWGJ0Qqso1cRVqydJJUae1s0YSzTm1HOTztZ8jleuvYvHRp1asYxglKrNbVTJN9yCin3n033Oga1U8b9mqVIW2u69jO+wr32VxfF3avwOGYpy2pbd9pu7vk7+Ke4qMpr3p77diFOEXGlThGjTT95xi23KXJtyeXJI17ZJ7HlrhVNKm2Tqj4lUVYlpxu0lveQR7gsE5SST3Zt8kbtq3oeWIqxo0VdyzlJ7oRW+UvBcuLsjEaPwbyp04uc5b7cX+C8ztmouhFhaXOpOzqS5vhFfyr9So2PQ2i6eGpRpU1lHe+M5PfKXiy+PInpzbAAAAAAAADT/aRpfssP2MH36yafNUl73ru9Tb5ySTb3LN+COI666Y7WrVrN91LZj/T8K/HzbNcxK0HTdS9aSW6KjFdIpv5tli0R1akpTlLi3tepUp8/wBDSPQkeBu28gmjiLe9+p7Ks2uSMbVquXkXWEltRtyy6Aeub4ZeJBOKafpfn5EtWL/C3N8CG/W7t/gC40fVy8Yu3Tgdm1Or1sXB4iviXOEV2ey3dxlHZztui7etziFKezNcnl+X78Tp/sg0hD7S8NV9yqrxV7LtYZx9VtL/AIgdNwNBTi1RWztXcpRWzve9y5mUwOh6dFZK73tvNt9d5kIqMUlFJJbklZLoW1eqQY7SlK6ZzDWrVyFRtumr80s/U6lWzLGvo5S3oo+fcbq1Ui+5n4S/CX5mLrYeVPKcHHzWT8nuZ9FT1cjLgW1fU6Ek04pp701dPoFfPiNn1Y1cq12pJWi/ia3L+VcWdIp+y/Ddop9m8nfZu+zb8Y/gsjdNH6DjBJJLIJjXtWdWIUF3Y5ve3nKXmzdMJSsiSlhkieMSWrgioAyoAAAAAAAC30jDapVY84TXrFo+adZcZtT7NPJZy/q4LovqfTrVz5f1t0TLCY2vQlfuzbi38VOXeg/HJ+qZrlKwdSNs+X04gmqkKhbp9DSKJRtuLetNt58C835FvXgQiBEuHqWkvHIhaPGRV9io3RbqV7Xks8st7LmlLaj8upaVItPdm1v5L4ioTd07NZcndoy2hsfKnOnVi7ShJST5Si7/AFRiKc91llZ57ivAytOUXuea8/39APqvRmlFXpU6sd1SEZ25XWa6O66FzKNzn3sn0l2mG7NvOlNx/tl3o/8A16HR6aAhjRJoUCeESRIlVFCkSKmVgmqp2EepHoIAAAAAAAAAAAAAAcr9uOr+3TpY2C71JqjVtxpyfcb8pu3/AJDqhaaTwMK9KpRqK8KkJU5eUlb1LCvlBy4FM/0L3TOjpUK1WhPKdKbg/G3Hyas14MspG2VLyZ5UzPJS3ehVLcQWZ40STjxKZBUmDnZ25/UrxdPNNb9/nzLW9vqZGDUksr34cbhKtaWHvwSS3fiZLA4BzaUF4X39Fzfgi7oYDc59I/n+R0LUHQW01XlHur/Sjwv/AB2+nryA2LUDVpYSm7r7ypaVR+V9mPS76tm8wLXDU7IuYsip4kiI4kiJVegAgAAAAAAAAAAAAAAAAFEys8YHGPbTq/J1IYylBu8ezrbKu04+5N24W7rf8sTlbzPqbS+F2os4zrbqlFSlKEdltt5LJ+aNsudSf78T1SyLjF4KcHaS68C0AqjFPyJPs0f22KZLtAQ/ZY8vmzK4SjGksl3uL328EW+HjbvPp+ZsWg9XaldqUk4w5/FLyXDzAr1b0XLE1UvgVnN+HJeL/M7NorCKEUkkkkklwSW5GH1f0PChFRjFJfNvm3xZslJAi5iSwIoIuYRIquCJEeRRUZUAAAAAAAAAAAAAAAAAAAAARVYXRgtJ6JU75GxFEqZZUcq01qmne0TQdK6pyi24pr6PofRVbCJ8DF4vQcJcDWpj5oxWDnT9+LS5/D6lWAw0qs1CEXJvgv3l5nf62qMH8O/w3lWidTqFC/Z0oxu7uytdgaFq5qbZqdVbUt6XwR/N+JvmC0eo8DPUtHJcCeOFAx1GkXtKmXMaBLGkRVFOmTxiFEqIoACAAAAAAAAAAAAAAAAAAAAAAAAAAAPLCx6AFgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/9k=' },
-  { id:2, name:'Colchoneta Yoga', price:15.0, stock:30, image_url:'' },
-  { id:3, name:'Soga de Saltar',  price:9.9,  stock:20, image_url:'' },
-];
-let nextProdId = 4;
+import { all, get, run } from '../config/db.js';
 
 export const Products = {
-  all: () => productsMem,
-  byId: id => productsMem.find(p=>p.id===Number(id)),
-  create: (p) => {
-    const n = { id: nextProdId++, name:p.name, price:Number(p.price), stock:Number(p.stock), image_url:p.image_url||'' };
-    productsMem.push(n); return n;
+  all: async () => {
+    return all(`
+      SELECT
+        ProdId       AS id,
+        Nombre       AS name,
+        Descripcion  AS description,
+        Precio       AS price,
+        Stock        AS stock,
+        ImageUrl     AS image_url
+      FROM Productos
+      ORDER BY ProdId DESC
+    `);
   },
-  update: (id, p) => {
-    const x = productsMem.find(i=>i.id===Number(id));
-    if(!x) return null;
-    if(p.name!==undefined) x.name=p.name;
-    if(p.price!==undefined) x.price=Number(p.price);
-    if(p.stock!==undefined) x.stock=Number(p.stock);
-    if(p.image_url!==undefined) x.image_url=p.image_url;
-    return x;
+
+  byId: async (id) => {
+    return get(`
+      SELECT
+        ProdId       AS id,
+        Nombre       AS name,
+        Descripcion  AS description,
+        Precio       AS price,
+        Stock        AS stock,
+        ImageUrl     AS image_url
+      FROM Productos
+      WHERE ProdId = ?
+    `, [id]);
   },
-  remove: (id) => {
-    const i = productsMem.findIndex(p=>p.id===Number(id));
-    if(i>=0) productsMem.splice(i,1);
-    return i>=0;
-  }
+
+  create: async ({ name, price, stock, image_url = '', description = '' }) => {
+    const r = await run(
+      `INSERT INTO Productos (Nombre, Descripcion, Precio, Stock, ImageUrl)
+       VALUES (?,?,?,?,?)`,
+      [name, description, Number(price), Number(stock), image_url]
+    );
+    return Products.byId(r.lastID);
+  },
+
+  update: async (id, p) => {
+    const cur = await Products.byId(id);
+    if (!cur) return null;
+
+    const name        = p.name        ?? cur.name;
+    const description = p.description ?? cur.description ?? '';
+    const price       = p.price       ?? cur.price;
+    const stock       = p.stock       ?? cur.stock;
+    const image_url   = p.image_url   ?? cur.image_url ?? '';
+
+    await run(
+      `UPDATE Productos
+         SET Nombre = ?,
+             Descripcion = ?,
+             Precio = ?,
+             Stock = ?,
+             ImageUrl = ?
+       WHERE ProdId = ?`,
+      [name, description, Number(price), Number(stock), image_url, id]
+    );
+
+    return Products.byId(id);
+  },
+
+remove: async (id) => {
+  const r = await run(`DELETE FROM Productos WHERE ProdId = ?`, [id]);
+  return r.changes > 0;
+}
 };

@@ -1,49 +1,52 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { api } from '../services/api.js'
-import { onUserChange } from '../services/cart.js'
+import { createContext, useContext, useEffect, useState } from 'react';
+import { api } from '../services/api.js';
 
-const AuthContext = createContext(null)
-export const useAuth = () => useContext(AuthContext)
+const AuthCtx = createContext(null);
+export const useAuth = () => useContext(AuthCtx);
 
-export function AuthProvider({ children }){
-  const [token, setToken] = useState(localStorage.getItem('token')||null)
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
 
-  useEffect(()=>{
-    const init = async ()=>{
-      try{
-        if(!token){ localStorage.removeItem('token'); setUser(null); return }
-        localStorage.setItem('token', token)
-        const d = await api('/auth/me')
-        setUser(d.user)
-      }catch{ logout() }
-      finally{ setLoading(false) }
-    }
-    init()
-  }, [token])
+  // cargar usuario si hay token
+  useEffect(() => {
+    const t = localStorage.getItem('token');
+    if (!t) return;
+    api('/auth/whoami')
+      .then(u => setUser(u))
+      .catch(() => {
+        localStorage.removeItem('token');
+        setUser(null);
+      });
+  }, []);
 
-  const login = async (email,password)=>{
-    const d = await api('/auth/login',{method:'POST', body:JSON.stringify({email,password})})
-    setToken(d.token); setUser(d.user);
-    onUserChange(d.user.id);                   // ⬅️ activa carrito del usuario y borra el anónimo
-    return d.user
-  }
-  const register = async (payload)=>{
-    const d = await api('/auth/register',{method:'POST', body:JSON.stringify(payload)})
-    setToken(d.token); setUser(d.user);
-    onUserChange(d.user.id);                   // ⬅️ idem
-    return d.user
-  }
+  const login = async ({ email, password }) => {
+    const { token, user } = await api('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    localStorage.setItem('token', token);
+    setUser(user);
+    return user;
+  };
 
-  const logout = ()=>{
-    setToken(null); setUser(null);
-    onUserChange(null);                        // ⬅️ vuelve a carrito anónimo (vacío)
-  }
+  const register = async ({ name, email, password }) => {
+    const { token, user } = await api('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password })
+    });
+    localStorage.setItem('token', token);
+    setUser(user);
+    return user;
+  };
 
-  const hasRole = (...roles)=> user && roles.includes(user.role)
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
 
-  return <AuthContext.Provider value={{user,token,loading,login,register,logout,hasRole}}>
-    {children}
-  </AuthContext.Provider>
+  return (
+    <AuthCtx.Provider value={{ user, login, register, logout }}>
+      {children}
+    </AuthCtx.Provider>
+  );
 }

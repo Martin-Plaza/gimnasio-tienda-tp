@@ -8,14 +8,17 @@ export default function Navbar(){
   const [cartCount, setCartCount] = useState(0)
   const navigate = useNavigate()
 
+  // etiqueta segura: name → email user → 'user'
+  const label = user ? (user.name || (user.email?.split('@')[0]) || 'user') : null
+
   useEffect(()=>{
-const load = ()=> {
-  const cart = readCart()
-  setCartCount(cart.reduce((a,i)=>a+i.qty,0))
-}
+    const load = ()=> {
+      const cart = readCart()
+      setCartCount(cart.reduce((a,i)=> a + Number(i.qty||0), 0))
+    }
     load()
-    const i = setInterval(load, 500)
-    return ()=>clearInterval(i)
+    const id = setInterval(load, 500)
+    return ()=> clearInterval(id)
   },[])
 
   return (
@@ -23,24 +26,29 @@ const load = ()=> {
       <Link to="/" className="brand">GymShop</Link>
       <Link to="/carrito">Carrito ({cartCount})</Link>
       {user && <Link to="/mis-ordenes">Mis Órdenes</Link>}
-      {hasRole && hasRole('admin','super-admin') && (
+
+      {typeof hasRole === 'function' && hasRole('admin','super-admin') && (
         <>
           <Link to="/admin/productos">Productos</Link>
           <Link to="/admin/ordenes">Órdenes</Link>
         </>
       )}
-      {hasRole && hasRole('super-admin') && <Link to="/admin/usuarios">Usuarios</Link>}
-      <div style={{marginLeft:'auto'}} className="row">
-        {user
-          ? (<>
-              <span className="badge">{user.name} · {user.role}</span>
-              <button className="btn" onClick={()=>{ logout(); navigate('/')}}>Salir</button>
-            </>)
-          : (<>
-              <Link className="btn" to="/login">Login</Link>
-              <Link className="btn" to="/register">Registro</Link>
-            </>)
-        }
+      {typeof hasRole === 'function' && hasRole('super-admin') && (
+        <Link to="/admin/usuarios">Usuarios</Link>
+      )}
+
+      <div style={{ marginLeft: 'auto' }} className="row">
+        {user ? (
+          <>
+            <span className="badge">{label} · {user.role}</span>
+            <button className="btn" onClick={()=>{ logout(); navigate('/'); }}>Salir</button>
+          </>
+        ) : (
+          <>
+            <Link className="btn" to="/login">Login</Link>
+            <Link className="btn" to="/register">Registro</Link>
+          </>
+        )}
       </div>
     </nav>
   )

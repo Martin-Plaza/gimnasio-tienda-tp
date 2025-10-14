@@ -1,36 +1,48 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 
-export default function Login(){
-  const { login } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
-  const navigate = useNavigate()
+export default function Login() {
+  const { login } = useAuth();
+  const nav = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [err, setErr] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const submit = async (e)=>{
-    e.preventDefault(); setError(null)
-    if(!email.includes('@')) return setError('Email inválido')
-    if(password.length < 6) return setError('La contraseña debe tener al menos 6 caracteres')
-    try{
-      await login(email, password)
-      navigate('/')
-    }catch(e){ setError(e.message) }
-  }
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr(null);
+    try {
+      setLoading(true);
+      await login({ email, password });
+      nav('/'); // o a donde quieras
+    } catch (e) {
+      setErr(e.message || 'Error de login');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={{maxWidth:420}}>
+    <div>
       <h1>Login</h1>
-      <form onSubmit={submit} className="card">
+      <form className="card" onSubmit={submit} style={{ maxWidth: 480 }}>
         <label className="label">Email</label>
-        <input className="input" value={email} onChange={e=>setEmail(e.target.value)} required/>
+        <input className="input" value={email} onChange={e=>setEmail(e.target.value)} required />
+
         <label className="label">Contraseña</label>
-        <input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} required/>
-        {error && <p className="error">{error}</p>}
-        <button className="btn primary">Ingresar</button>
-        <p className="help">¿No tenés cuenta? <Link to="/register">Registrate</Link></p>
+        <input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
+
+        {err && <p className="error">{err}</p>}
+        <button className="btn primary" disabled={loading} type="submit">
+          {loading ? 'Ingresando…' : 'Ingresar'}
+        </button>
+
+        <p className="help" style={{marginTop:12}}>
+          ¿No tenés cuenta? <Link to="/register">Registrate</Link>
+        </p>
       </form>
     </div>
-  )
+  );
 }

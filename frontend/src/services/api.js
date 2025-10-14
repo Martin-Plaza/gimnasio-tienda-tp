@@ -1,15 +1,21 @@
-export const API_URL = 'http://localhost:4000';
+export const API_URL = 'http://127.0.0.1:4000';
 
-export async function api(path, options = {}){
+export async function api(path, options = {}) {
   const token = localStorage.getItem('token');
-  const headers = { 'Content-Type':'application/json', ...(options.headers||{}) };
-  if (token) headers.Authorization = `Bearer ${token}`;
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
-  const isJson = res.headers.get('content-type')?.includes('application/json');
-  const data = isJson ? await res.json().catch(()=>({})) : await res.text();
-  if(!res.ok){
-    const message = typeof data === 'object' ? (data.message || 'Error') : (data || 'Error');
-    throw new Error(message);
+  const res = await fetch(`${API_URL}${path}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    ...options
+  });
+
+  if (!res.ok) {
+    const txt = await res.text();
+    let msg = res.statusText;
+    try { msg = JSON.parse(txt).message || msg; } catch {}
+    throw new Error(msg);
   }
-  return data;
+  return res.json();
 }
