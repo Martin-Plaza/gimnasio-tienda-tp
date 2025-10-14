@@ -9,41 +9,55 @@ export default function Checkout(){
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const cart = readCart();
-  const total = cart.reduce((s,i)=> s + Number(i.price)*Number(i.qty), 0);
+  // ✅ Carrito válido: adaptamos product_id → id si hace falta
+  const cart = Array.isArray(readCart())
+    ? readCart().map(i => ({
+        id: i.id ?? i.product_id,    // ✅ Soporta ambas formas
+        qty: Number(i.qty),
+        price: Number(i.price),
+        name: i.name
+      }))
+    : [];
+
+  const total = cart.reduce((s,i)=> s + i.price * i.qty, 0);
+
+  if (!cart.length) {
+    return (
+      <div className="container">
+        <h2>Checkout</h2>
+        <p className="muted">Tu carrito está vacío.</p>
+      </div>
+    );
+  }
 
   const submit = async (e)=>{
     e.preventDefault();
     setError(null);
-    if (address.trim().length < 5) { setError('La dirección es demasiado corta'); return; }
-    if (!cart.length) { setError('El carrito está vacío'); return; }
-
+    setLoading(true);
     try{
-      setLoading(true);
-      const res = await api('/orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          address: address.trim(),
-          items: cart.map(c=>({ product_id: c.product_id, qty: c.qty }))
-        })
-      });
-      // res = { ok: true, orderId, total }
+      const payload = {
+        address,
+        items: cart.map(i => ({
+          product_id: Number(i.id),   // ✅ Usa ID real
+          qty: Number(i.qty),
+          price: Number(i.price)
+        }))
+      };
+      await api('/orders', { method:'POST', body: JSON.stringify(payload) });
       clearCart();
       navigate('/mis-ordenes');
     }catch(err){
-      setError(err.message || 'Error al crear la orden');
+      setError(err.message || 'Error al procesar el pedido');
     }finally{
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h1>Checkout</h1>
-      <p className="help">Total a pagar: ${total.toFixed(2)}</p>
-
-      <form onSubmit={submit} className="card" style={{maxWidth:520}}>
-        <label className="label">Dirección de envío</label>
+    <div className="container">
+      <h2>Checkout</h2>
+      <p>Total a pagar: ${total.toFixed(2)}</p>
+      <form onSubmit={submit}>
         <input
           className="input"
           value={address}

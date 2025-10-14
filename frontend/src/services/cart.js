@@ -7,22 +7,28 @@ const cartKey = () => {
   return uid ? `cart:u:${uid}` : 'cart:anon';
 };
 
-// API simple
-export const readCart = () => JSON.parse(localStorage.getItem(cartKey()) || '[]');
+// ✅ Blindado: lectura segura de carrito
+export const readCart = () => {
+  try { return JSON.parse(localStorage.getItem(cartKey()) || '[]'); }
+  catch { return []; }
+};
+
 export const saveCart = (cart) => localStorage.setItem(cartKey(), JSON.stringify(cart));
 export const clearCart = () => localStorage.removeItem(cartKey());
 
-// Cuando cambia el usuario: setear currentUserId y preparar su carrito
+// ✅ Manejo de cambio de usuario y migración de carrito anónimo
 export const onUserChange = (userId) => {
   if (userId) {
     localStorage.setItem('currentUserId', String(userId));
-    // si no tiene carrito guardado, que arranque vacío
     const key = `cart:u:${userId}`;
-    if (!localStorage.getItem(key)) localStorage.setItem(key, '[]');
+    if (!localStorage.getItem(key)) {
+      // 🟢 Migrar carrito anónimo si existe
+      const anon = JSON.parse(localStorage.getItem('cart:anon') || '[]');
+      localStorage.setItem(key, JSON.stringify(anon));
+      localStorage.setItem('cart:anon', '[]');
+    }
   } else {
-    // logout → volver a anónimo
     localStorage.removeItem('currentUserId');
-    // opcional: limpiar carrito anónimo
     localStorage.setItem('cart:anon', '[]');
   }
 };

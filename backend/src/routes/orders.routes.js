@@ -22,31 +22,43 @@ router.post('/', authRequired, async (req, res) => {
       [userId, 'Auto', 'Creado', '', address, userId]
     );
 
-    const ids  = items.map(i => i.product_id);
-    const rows = await all(
-      `SELECT ProdId, Precio, Stock
-         FROM Productos
-        WHERE ProdId IN (${ids.map(()=>'?').join(',')})`,
-      ids
-    );
-    if (rows.length !== ids.length) {
-      return res.status(400).json({ message: 'Hay productos inexistentes en el carrito' });
-    }
-    const byId = Object.fromEntries(rows.map(r => [r.ProdId, r]));
-    for (const it of items) {
-      const pr = byId[it.product_id];
-      if (!pr) return res.status(400).json({ message: `Producto #${it.product_id} no existe` });
-      if (pr.Stock < it.qty) return res.status(400).json({ message: `Sin stock para #${it.product_id}` });
-    }
+// Obtener todos los productos reales por ID
+const ids = items.map(i => Number(i.product_id));
+const rows = await all(
+  `SELECT ProdId AS id, Precio AS price, Stock
+     FROM Productos
+    WHERE ProdId IN (${ids.map(() => '?').join(',')})`,
+  ids
+);
 
-    const total = items.reduce((s, it) => s + byId[it.product_id].Precio * it.qty, 0);
+// Convertir lista a mapa por id
+const byId = Object.fromEntries(rows.map(r => [r.id, r]));
 
-    await run('BEGIN');
-    const ins = await run(
-  `INSERT INTO Pedidos (Fecha, Monto, UsuarioId, Status) VALUES (?,?,?,?)`,
+// Validar productos
+for (const it of items) {
+  const pr = byId[Number(it.product_id)];
+  if (!pr) {
+    return res.status(400).json({ message: `El producto ${it.product_id} no existe o fue eliminado` });
+  }
+  if (pr.Stock < it.qty) {
+    return res.status(400).json({ message: `No hay stock suficiente para ${it.product_id}` });
+  }
+}
+
+// Calcular total (usar price, no Precio)
+const total = items.reduce((s, it) => {
+  const pr = byId[it.product_id];
+  return s + (pr.price * it.qty);
+}, 0);
+
+// INSERT pedido
+await run('BEGIN');
+const ins = await run(
+  `INSERT INTO Pedidos (Fecha, Monto, UsuarioId, Status)
+   VALUES (?,?,?,?)`,
   [new Date().toISOString(), total, userId, 'pending']
 );
-    const orderId = ins.lastID;
+const orderId = ins.lastID;
 
     for (const it of items) {
       await run(

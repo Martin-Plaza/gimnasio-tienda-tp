@@ -23,7 +23,7 @@ export default function App(){
           <Route path='/producto/:id' element={<ProductDetail />} />
           <Route path='/carrito' element={<Cart />} />
           <Route path='/checkout' element={
-            <ProtectedRoute roles={["user","admin","super-admin"]}><Checkout/></ProtectedRoute>
+            <ProtectedRoute><Checkout/></ProtectedRoute>
           }/>
           <Route path='/mis-ordenes' element={
             <ProtectedRoute roles={["user","admin","super-admin"]}><MyOrders/></ProtectedRoute>

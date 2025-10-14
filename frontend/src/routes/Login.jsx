@@ -15,7 +15,7 @@ export default function Login() {
     setErr(null);
     try {
       setLoading(true);
-      await login({ email, password });
+      await login( email, password );
       nav('/'); // o a donde quieras
     } catch (e) {
       setErr(e.message || 'Error de login');

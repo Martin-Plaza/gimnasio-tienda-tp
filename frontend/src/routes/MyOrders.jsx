@@ -13,13 +13,26 @@ export default function MyOrders(){
 
   useEffect(()=>{
     (async()=>{
-      try { setRows(await api('/orders/mine')); }
-      catch(e){ setErr(e.message); }
+      try {
+        const data = await api('/orders/mine');
+        console.log("RESPUESTA /orders/mine =>", data);
+        // ✅ Asegurar nombres correctos desde backend
+        const fixed = data.map(o => ({
+          id: o.id ?? o.Id,
+          date: o.date ?? o.Fecha,
+          total: o.total ?? o.Monto,
+          status: o.status ?? o.Status ?? '—'
+        }));
+        setRows(fixed);
+      }
+      catch(e){
+        setErr(e.message);
+      }
     })();
   },[]);
 
   return (
-    <div>
+    <div className="container">
       <h1>Mis Órdenes</h1>
       {err && <p className="error">{err}</p>}
       {!rows.length ? (
@@ -34,7 +47,7 @@ export default function MyOrders(){
               <tr key={o.id}>
                 <td>{o.id}</td>
                 <td>{fmtDate(o.date)}</td>
-                <td>{o.status || '—'}</td>
+                <td>{o.status}</td>
                 <td>{fmtMoney(o.total)}</td>
               </tr>
             ))}
