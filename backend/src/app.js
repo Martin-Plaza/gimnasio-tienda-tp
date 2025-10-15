@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.routes.js';
 import productsRoutes from './routes/products.routes.js';
 import ordersRoutes from './routes/orders.routes.js';
+import usersRoutes from './routes/users.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -50,5 +51,6 @@ app.get('/health', (_req,res)=>res.json({ ok:true }));
 app.use('/auth', authRoutes);
 app.use('/products', productsRoutes);
 app.use('/orders', ordersRoutes);
+app.use('/users', usersRoutes); 
 
 export default app;

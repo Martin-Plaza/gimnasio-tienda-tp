@@ -1,122 +1,111 @@
-// frontend/src/routes/admin/OrdersAdmin.jsx
-import { useEffect, useState } from 'react'
-import { api } from '../../services/api.js'
+import { useEffect, useState } from 'react';
+import { api } from '../../services/api.js';
+
+const fmtDate = (s) => {
+  const d = new Date(s);
+  return isNaN(d) ? 'Invalid Date' : d.toLocaleString('es-AR');
+};
+const fmtMoney = (n) => isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`;
 
 export default function OrdersAdmin(){
-  const [orders, setOrders] = useState([])
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [filters, setFilters] = useState({ user:'', dateFrom:'', dateTo:'' })
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState(null);
 
-  const buildQuery = () => {
-    const q = new URLSearchParams()
-    const u = (filters.user || '').trim()
-    if (u) q.set('user', u)                 // email parcial o id exacto
-    if (filters.dateFrom) q.set('dateFrom', filters.dateFrom)
-    if (filters.dateTo)   q.set('dateTo',   filters.dateTo)
-    return q.toString()
-  }
-
-  const load = async () => {
+  const load = async ()=>{
+    setErr(null);
+    setLoading(true);
     try{
-      setLoading(true); setError(null)
-      const qs = buildQuery()
-      const data = await api(`/orders${qs ? `?${qs}` : ''}`)
-      setOrders(data)
-    }catch(e){ setError(e.message) }
-    finally{ setLoading(false) }
-  }
+      const data = await api('/orders');
+      // normalizar por si el backend devuelve mayúsculas
+      const fixed = data.map(o => ({
+        id: o.id ?? o.Id,
+        user_id: o.user_id ?? o.UsuarioId,
+        date: o.date ?? o.Fecha,
+        status: o.status ?? o.Status,
+        total: o.total ?? o.Monto,
+      }));
+      setRows(fixed);
+    }catch(e){
+      setErr(e.message);
+    }finally{
+      setLoading(false);
+    }
+  };
 
-  const clearFilters = async (e) => {
-    e?.preventDefault()
-    setFilters({ user:'', dateFrom:'', dateTo:'' })
+  useEffect(()=>{ load(); },[]);
+
+  const setStatus = async (id, status)=>{
     try{
-      setLoading(true); setError(null)
-      const data = await api('/orders')
-      setOrders(data)
-    }catch(e){ setError(e.message) }
-    finally{ setLoading(false) }
-  }
+      await api(`/orders/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status })
+      });
+      // refrescar fila localmente para UX rápida
+      setRows(rs => rs.map(r => r.id === id ? { ...r, status } : r));
+    }catch(e){
+      alert(e.message || 'Error al actualizar estado');
+    }
+  };
 
-  const changeStatus = async (id, status)=>{
+  const removeOrder = async (id)=>{
+    const ok = window.confirm(`¿Eliminar la orden #${id}? Esta acción no se puede deshacer.`);
+    if(!ok) return;
     try{
-      await api(`/orders/${id}/status`, { method:'PUT', body: JSON.stringify({ status })})
-      load()
-    }catch(e){ setError(e.message) }
-  }
-
-  useEffect(()=>{ clearFilters() },[]) // carga inicial (todas)
+      await api(`/orders/${id}`, { method:'DELETE' });
+      // quitar de la tabla sin recargar
+      setRows(rs => rs.filter(r => r.id !== id));
+    }catch(e){
+      alert(e.message || 'No se pudo eliminar la orden');
+    }
+  };
 
   return (
-    <div>
+    <div className="container">
       <h1>Órdenes</h1>
-
-      <div className="card" style={{marginBottom:12}}>
-        <div className="row">
-          <div>
-            <span className="label">Usuario (email parcial o id)</span>
-            <input
-              className="input"
-              value={filters.user}
-              onChange={e=>setFilters(f=>({...f,user:e.target.value}))}
-              placeholder="user@gym.com o 3"
-            />
-          </div>
-          <div>
-            <span className="label">Desde</span>
-            <input
-              type="date"
-              className="input"
-              value={filters.dateFrom}
-              onChange={e=>setFilters(f=>({...f,dateFrom:e.target.value}))}
-            />
-          </div>
-          <div>
-            <span className="label">Hasta</span>
-            <input
-              type="date"
-              className="input"
-              value={filters.dateTo}
-              onChange={e=>setFilters(f=>({...f,dateTo:e.target.value}))}
-            />
-          </div>
-          <div className="row" style={{alignItems:'flex-end'}}>
-            <button className="btn" onClick={load}>Filtrar</button>
-            <button className="btn" onClick={clearFilters}>Limpiar</button>
-          </div>
-        </div>
-      </div>
-
-      {loading && <p className="help">Cargando...</p>}
-      {error && <p className="error">{error}</p>}
-
-      {!loading && !orders.length && <p className="help">Sin resultados.</p>}
-
-      {!!orders.length && (
+      {err && <p className="error">{err}</p>}
+      {loading ? <p className="help">Cargando…</p> : (
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th><th>Usuario</th><th>Fecha</th><th>Estado</th><th>Total</th><th>Acciones</th>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Total</th>
+              <th style={{textAlign:'center'}}>Acciones</th>
+              <th style={{width:110}}></th>
             </tr>
           </thead>
           <tbody>
-            {orders.map(o=>(
+            {rows.map(o => (
               <tr key={o.id}>
                 <td>#{o.id}</td>
-                <td>{o.user_email || o.user_id}</td>
-                <td>{new Date(o.created_at).toLocaleString()}</td>
+                <td>{o.user_id}</td>
+                <td>{fmtDate(o.date)}</td>
                 <td><span className="badge">{o.status}</span></td>
-                <td>${Number(o.total).toFixed(2)}</td>
-                <td className="row">
-                  {['pending','paid','shipped','canceled'].map(s=>(
-                    <button key={s} className="btn" onClick={()=>changeStatus(o.id, s)}>{s}</button>
-                  ))}
+                <td>{fmtMoney(o.total)}</td>
+                <td>
+                  <div className="row" style={{gap:8, flexWrap:'wrap'}}>
+                    <button className="btn" onClick={()=>setStatus(o.id,'pending')}>pending</button>
+                    <button className="btn" onClick={()=>setStatus(o.id,'paid')}>paid</button>
+                    <button className="btn" onClick={()=>setStatus(o.id,'shipped')}>shipped</button>
+                    <button className="btn" onClick={()=>setStatus(o.id,'canceled')}>canceled</button>
+                  </div>
+                </td>
+                <td>
+                  <button className="btn danger" onClick={()=>removeOrder(o.id)}>
+                    Borrar
+                  </button>
                 </td>
               </tr>
             ))}
+            {!rows.length && (
+              <tr><td colSpan={7}><p className="help">No hay órdenes.</p></td></tr>
+            )}
           </tbody>
         </table>
       )}
     </div>
-  )
+  );
 }

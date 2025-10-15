@@ -120,4 +120,27 @@ router.put('/:id/status',
   }
 );
 
+router.delete('/:id',
+  authRequired, roleRequired('admin','super-admin'),
+  async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) return res.status(400).json({ message: 'ID inválido' });
+
+    try {
+      await run('BEGIN');
+      // Borrar primero el detalle para respetar FK lógicas
+      await run(`DELETE FROM DetalleCompras WHERE CompraId = ?`, [id]);
+      const r = await run(`DELETE FROM Pedidos WHERE Id = ?`, [id]);
+      await run('COMMIT');
+
+      if (!r.changes) return res.status(404).json({ message: 'Orden no encontrada' });
+      return res.json({ ok: true });
+    } catch (e) {
+      try { await run('ROLLBACK'); } catch {}
+      console.error('DELETE /orders/:id error:', e);
+      return res.status(500).json({ message: e.message });
+    }
+  }
+);
+
 export default router;

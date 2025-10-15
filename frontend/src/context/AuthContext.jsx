@@ -25,9 +25,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   const hasRole = (...roles) => {
-  // Si no hay user, no tiene rol
   if (!user) return false;
-  return roles.includes(user.role);
+  const r = String(user.role || '').toLowerCase();
+  const wants = roles.map(x => String(x).toLowerCase());
+
+  // jerarquía: super-admin ≥ admin ≥ user
+  if (r === 'super-admin' || r === 'superadmin') {
+    return wants.includes('super-admin') || wants.includes('superadmin') || wants.includes('admin') || wants.includes('user');
+  }
+  if (r === 'admin') {
+    return wants.includes('admin') || wants.includes('user');
+  }
+  return wants.includes('user') || wants.length === 0;
 };
 
   const login = async (email, password) => {
@@ -59,13 +68,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-  <AuthCtx.Provider value={{
-    user,
-    login,
-    register,
-    logout,
-    hasRole   // ✅ AGREGADO
-  }}>
+  <AuthCtx.Provider value={{ user, login, register, logout, hasRole }}>
     {children}
   </AuthCtx.Provider>
 );
