@@ -14,14 +14,13 @@ export default function Home() {
   }, []);
 
   const addToCart = (p) => {
-    // Normalizamos campos por si vienen en mayúsculas desde la DB
-    const id = p.id ?? p.ProdId;
-    const name = p.name ?? p.Nombre;
+    const id    = p.id ?? p.ProdId;
+    const name  = p.name ?? p.Nombre;
     const price = Number(p.price ?? p.Precio);
     const stock = Number(p.stock ?? p.Stock);
 
     const cart = readCart();
-    const idx = cart.findIndex(i => (i.id ?? i.product_id) === id);
+    const idx  = cart.findIndex(i => (i.id ?? i.product_id) === id);
 
     if (idx === -1) cart.push({ id, name, price, qty: 1 });
     else cart[idx].qty = Math.min((Number(cart[idx].qty) || 1) + 1, stock || 9999);
@@ -33,7 +32,6 @@ export default function Home() {
 
   const imgSrc = (p) => {
     const raw = p.image_url ?? p.ImageUrl ?? '';
-    // Si ya es URL absoluta, úsala; si no, sirve desde el backend (/images/*)
     if (raw.startsWith('http')) return raw;
     return `${API_URL}${raw || '/images/placeholder.jpeg'}`;
   };
@@ -41,33 +39,54 @@ export default function Home() {
   const desc = (p) => (p.description ?? p.Descripcion ?? '').trim();
 
   return (
-    <div className="container">
-      <h2>Productos</h2>
-      {msg && <p className="help">{msg}</p>}
+    <div className="container py-4">
+      <h1 className="mb-3">Productos</h1>
 
-      <div className="grid">
+      {msg && <div className="alert alert-success py-2">{msg}</div>}
+
+      {/* Grilla Bootstrap */}
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
         {products.map(p => (
-          <div key={p.id ?? p.ProdId} className="card" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <img
-              src={imgSrc(p)}
-              alt={p.name ?? p.Nombre}
-              style={{ width: '100%', height: 220, objectFit: 'cover', borderRadius: 12 }}
-              onError={(e) => { e.currentTarget.src = `${API_URL}/images/placeholder.jpeg`; }}
-            />
-            <h3>{p.name ?? p.Nombre}</h3>
-            {/* Descripción adentro de la card */}
-            {(desc(p)) && <p className="muted" style={{ minHeight: 40 }}>{desc(p)}</p>}
+          <div className="col" key={p.id ?? p.ProdId}>
+            <div className="card fx-card h-100">
+              <div className="fx-img" style={{ maxHeight: 260 }}>
+                <img
+                  src={imgSrc(p)}
+                  alt={p.name ?? p.Nombre}
+                  style={{ width: '100%', height: 260, objectFit: 'cover' }}
+                  onError={(e) => { e.currentTarget.src = `${API_URL}/images/placeholder.jpeg`; }}
+                />
+              </div>
 
-            <p className="muted">
-              ${Number(p.price ?? p.Precio).toFixed(2)} · Stock: {Number(p.stock ?? p.Stock)}
-            </p>
+              <div className="card-body d-flex flex-column">
+                <h5 className="card-title mb-1">{p.name ?? p.Nombre}</h5>
+                {desc(p) && <div className="text-muted mb-2">{desc(p)}</div>}
 
-            <div className="row" style={{ marginTop: 4 }}>
-              <button className="btn" onClick={() => addToCart(p)}>Agregar</button>
-              {/* Se quitó el botón "Ver" */}
+                <div className="text-muted">Stock: {Number(p.stock ?? p.Stock)}</div>
+                <div className="fx-price my-3">
+                  ${Number(p.price ?? p.Precio).toFixed(2)}
+                </div>
+
+                {/* Acciones SIEMPRE alineadas abajo */}
+                <div className="fx-actions">
+                  <button
+                    className="btn btn-dark w-100"
+                    onClick={() => addToCart(p)}
+                    disabled={(Number(p.stock ?? p.Stock) || 0) <= 0}
+                    title={(Number(p.stock ?? p.Stock) || 0) <= 0 ? 'Sin stock' : 'Agregar al carrito'}
+                  >
+                    Agregar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         ))}
+        {!products.length && (
+          <div className="col">
+            <p className="text-muted">No hay productos disponibles.</p>
+          </div>
+        )}
       </div>
     </div>
   );
