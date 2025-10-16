@@ -1,11 +1,23 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api.js';
 
-const fmtDate = (s) => {
+const fmtDate  = (s) => {
   const d = new Date(s);
   return isNaN(d) ? '—' : d.toLocaleString('es-AR');
 };
 const fmtMoney = (n) => (isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`);
+
+// Map de clases para que siempre se vea con color
+const statusBadge = (s='') => {
+  const k = String(s).toLowerCase();
+  switch (k) {
+    case 'paid':     return 'badge rounded-pill text-bg-success';
+    case 'shipped':  return 'badge rounded-pill text-bg-info';
+    case 'canceled': return 'badge rounded-pill text-bg-danger';
+    case 'pending':
+    default:         return 'badge rounded-pill text-bg-secondary';
+  }
+};
 
 export default function MyOrders(){
   const [rows, setRows] = useState([]);
@@ -16,11 +28,11 @@ export default function MyOrders(){
       try {
         const data = await api('/orders/mine');
         const fixed = data.map(o => ({
-          // guardamos id para key interna, pero NO lo mostramos
           id:     o.id ?? o.Id,
           date:   o.date ?? o.Fecha,
           total:  o.total ?? o.Monto,
-          status: o.status ?? o.Status ?? '—',
+          // usar || para cubrir string vacío
+          status: (o.status || o.Status || 'pending')
         }));
         setRows(fixed);
       } catch (e) {
@@ -30,17 +42,17 @@ export default function MyOrders(){
   }, []);
 
   return (
-    <div className="container">
-      <h1>Mis Órdenes</h1>
-      {err && <p className="error">{err}</p>}
+    <div className="container py-4">
+      <h1 className="mb-3">Mis Órdenes</h1>
+      {err && <p className="text-danger">{err}</p>}
 
       {!rows.length ? (
-        <p className="help">No tenés órdenes todavía.</p>
+        <p className="text-muted">No tenés órdenes todavía.</p>
       ) : (
-        <table className="table">
-          <thead>
+        <table className="table table-hover align-middle">
+          <thead className="table-light">
             <tr>
-              <th>N°</th> {/* <- si no querés numeración, borrá esta columna */}
+              <th>N°</th>
               <th>Fecha</th>
               <th>Estado</th>
               <th>Total</th>
@@ -49,9 +61,9 @@ export default function MyOrders(){
           <tbody>
             {rows.map((o, idx) => (
               <tr key={o.id}>
-                <td>#{idx + 1}</td> {/* <- y esta celda */}
+                <td>#{idx + 1}</td>
                 <td>{fmtDate(o.date)}</td>
-                <td><span className="badge">{o.status}</span></td>
+                <td><span className={statusBadge(o.status)}>{o.status}</span></td>
                 <td>{fmtMoney(o.total)}</td>
               </tr>
             ))}
