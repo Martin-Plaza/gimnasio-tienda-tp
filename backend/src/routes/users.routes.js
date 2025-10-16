@@ -33,7 +33,7 @@ router.post('/', authRequired, roleRequired('super-admin'), async (req, res) => 
 
     const r = await run(
       `INSERT INTO Usuarios (Email, Password, Nombre, Apellido, Telefono, Direccion, Nivel)
-       VALUES (?,?,?,?,?,?,?)`,
+      VALUES (?,?,?,?,?,?,?)`,
       [email, hash, name, '', '', '', nivel]
     );
 
