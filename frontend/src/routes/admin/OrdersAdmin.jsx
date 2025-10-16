@@ -5,19 +5,7 @@ const fmtDate = (s) => {
   const d = new Date(s);
   return isNaN(d) ? 'Invalid Date' : d.toLocaleString('es-AR');
 };
-const fmtMoney = (n) => (isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`);
-
-// badge con color por estado
-const statusBadge = (s='') => {
-  const k = String(s).toLowerCase();
-  switch (k) {
-    case 'paid':     return 'badge rounded-pill text-bg-success';
-    case 'shipped':  return 'badge rounded-pill text-bg-info';
-    case 'canceled': return 'badge rounded-pill text-bg-danger';
-    case 'pending':
-    default:         return 'badge rounded-pill text-bg-secondary';
-  }
-};
+const fmtMoney = (n) => isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`;
 
 export default function OrdersAdmin(){
   const [rows, setRows] = useState([]);
@@ -29,12 +17,13 @@ export default function OrdersAdmin(){
     setLoading(true);
     try{
       const data = await api('/orders');
+      // normalizar nombres de campos (acepta user_email y variantes)
       const fixed = data.map(o => ({
         id:        o.id ?? o.Id,
         user_id:   o.user_id ?? o.UsuarioId,
         user_email:o.user_email ?? o.Email ?? o.email ?? null,
         date:      o.date ?? o.Fecha,
-        status:    (o.status ?? o.Status) || 'pending',
+        status:    o.status ?? o.Status,
         total:     o.total ?? o.Monto,
       }));
       setRows(fixed);
@@ -71,16 +60,14 @@ export default function OrdersAdmin(){
   };
 
   return (
-    <div className="container py-4">
-      <h1 className="mb-3">Órdenes</h1>
-      {err && <p className="text-danger">{err}</p>}
-      {loading ? (
-        <p className="text-muted">Cargando…</p>
-      ) : (
-        <table className="table table-striped align-middle">
-          <thead className="table-light">
+    <div className="container">
+      <h1>Órdenes</h1>
+      {err && <p className="error">{err}</p>}
+      {loading ? <p className="help">Cargando…</p> : (
+        <table className="table">
+          <thead>
             <tr>
-              {/* ID oculto visualmente */}
+              {/* ID eliminado */}
               <th>Usuario</th>
               <th>Fecha</th>
               <th>Estado</th>
@@ -92,27 +79,28 @@ export default function OrdersAdmin(){
           <tbody>
             {rows.map(o => (
               <tr key={o.id}>
+                {/* <td>#{o.id}</td>  <-- eliminado */}
                 <td>{o.user_email ?? `#${o.user_id}`}</td>
                 <td>{fmtDate(o.date)}</td>
-                <td><span className={statusBadge(o.status)}>{o.status}</span></td>
+                <td><span className="badge">{o.status}</span></td>
                 <td>{fmtMoney(o.total)}</td>
                 <td>
-                  <div className="d-flex flex-wrap gap-2">
-                    <button className="btn btn-outline-secondary btn-sm" onClick={()=>setStatus(o.id,'pending')}>pending</button>
-                    <button className="btn btn-outline-success btn-sm"   onClick={()=>setStatus(o.id,'paid')}>paid</button>
-                    <button className="btn btn-outline-info btn-sm"      onClick={()=>setStatus(o.id,'shipped')}>shipped</button>
-                    <button className="btn btn-outline-danger btn-sm"    onClick={()=>setStatus(o.id,'canceled')}>canceled</button>
+                  <div className="row" style={{gap:8, flexWrap:'wrap'}}>
+                    <button className="btn" onClick={()=>setStatus(o.id,'pending')}>pending</button>
+                    <button className="btn" onClick={()=>setStatus(o.id,'paid')}>paid</button>
+                    <button className="btn" onClick={()=>setStatus(o.id,'shipped')}>shipped</button>
+                    <button className="btn" onClick={()=>setStatus(o.id,'canceled')}>canceled</button>
                   </div>
                 </td>
-                <td className="text-end">
-                  <button className="btn btn-danger btn-sm" onClick={()=>removeOrder(o.id)}>
+                <td>
+                  <button className="btn danger" onClick={()=>removeOrder(o.id)}>
                     Borrar
                   </button>
                 </td>
               </tr>
             ))}
             {!rows.length && (
-              <tr><td colSpan={6}><p className="text-muted mb-0">No hay órdenes.</p></td></tr>
+              <tr><td colSpan={6}><p className="help">No hay órdenes.</p></td></tr>
             )}
           </tbody>
         </table>
