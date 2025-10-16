@@ -89,22 +89,43 @@ router.get('/mine', authRequired, async (req, res) => {
   res.json(rows);
 });
 
-/** Listado admin con filtros (id de usuario o rango de fechas) */
+// Listado admin con email del usuario (y filtros)
 router.get('/', authRequired, roleRequired('admin','super-admin'), async (req, res) => {
   const { q, from, to } = req.query;
+
   const params = [];
   let where = '1=1';
-  if (q && /^\d+$/.test(q)) { where += ' AND p.UsuarioId = ?'; params.push(Number(q)); }
+
+  // Filtro por usuario (id o email)
+  if (q) {
+    if (/^\d+$/.test(q)) {           // si es número: por UsuarioId
+      where += ' AND p.UsuarioId = ?';
+      params.push(Number(q));
+    } else {                         // si es texto: por Email
+      where += ' AND u.Email LIKE ?';
+      params.push(`%${q}%`);
+    }
+  }
+
+  // Filtros de fecha (ISO yyyy-mm-dd)
   if (from) { where += ' AND date(p.Fecha) >= date(?)'; params.push(from); }
-  if (to)   { where += ' AND date(p.Fecha) <= date(?)'; params.push(to); }
+  if (to)   { where += ' AND date(p.Fecha) <= date(?)'; params.push(to);   }
 
   const rows = await all(
-    `SELECT p.Id AS id, p.Fecha AS date, p.Monto AS total,
-            p.UsuarioId AS user_id, p.Status AS status
-       FROM Pedidos p
-      WHERE ${where}
-      ORDER BY p.Id DESC`, params
+    `SELECT
+        p.Id        AS id,
+        p.UsuarioId AS user_id,
+        u.Email     AS user_email,
+        p.Fecha     AS date,
+        p.Status    AS status,
+        p.Monto     AS total
+     FROM Pedidos p
+     LEFT JOIN Usuarios u ON u.Id = p.UsuarioId
+     WHERE ${where}
+     ORDER BY p.Id DESC`,
+    params
   );
+
   res.json(rows);
 });
 

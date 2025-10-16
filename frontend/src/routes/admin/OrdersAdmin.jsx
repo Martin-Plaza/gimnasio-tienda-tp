@@ -17,13 +17,14 @@ export default function OrdersAdmin(){
     setLoading(true);
     try{
       const data = await api('/orders');
-      // normalizar por si el backend devuelve mayúsculas
+      // normalizar nombres de campos (acepta user_email y variantes)
       const fixed = data.map(o => ({
-        id: o.id ?? o.Id,
-        user_id: o.user_id ?? o.UsuarioId,
-        date: o.date ?? o.Fecha,
-        status: o.status ?? o.Status,
-        total: o.total ?? o.Monto,
+        id:        o.id ?? o.Id,
+        user_id:   o.user_id ?? o.UsuarioId,
+        user_email:o.user_email ?? o.Email ?? o.email ?? null,
+        date:      o.date ?? o.Fecha,
+        status:    o.status ?? o.Status,
+        total:     o.total ?? o.Monto,
       }));
       setRows(fixed);
     }catch(e){
@@ -41,7 +42,6 @@ export default function OrdersAdmin(){
         method: 'PUT',
         body: JSON.stringify({ status })
       });
-      // refrescar fila localmente para UX rápida
       setRows(rs => rs.map(r => r.id === id ? { ...r, status } : r));
     }catch(e){
       alert(e.message || 'Error al actualizar estado');
@@ -53,7 +53,6 @@ export default function OrdersAdmin(){
     if(!ok) return;
     try{
       await api(`/orders/${id}`, { method:'DELETE' });
-      // quitar de la tabla sin recargar
       setRows(rs => rs.filter(r => r.id !== id));
     }catch(e){
       alert(e.message || 'No se pudo eliminar la orden');
@@ -68,7 +67,7 @@ export default function OrdersAdmin(){
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th>
+              {/* ID eliminado */}
               <th>Usuario</th>
               <th>Fecha</th>
               <th>Estado</th>
@@ -80,8 +79,8 @@ export default function OrdersAdmin(){
           <tbody>
             {rows.map(o => (
               <tr key={o.id}>
-                <td>#{o.id}</td>
-                <td>{o.user_id}</td>
+                {/* <td>#{o.id}</td>  <-- eliminado */}
+                <td>{o.user_email ?? `#${o.user_id}`}</td>
                 <td>{fmtDate(o.date)}</td>
                 <td><span className="badge">{o.status}</span></td>
                 <td>{fmtMoney(o.total)}</td>
@@ -101,7 +100,7 @@ export default function OrdersAdmin(){
               </tr>
             ))}
             {!rows.length && (
-              <tr><td colSpan={7}><p className="help">No hay órdenes.</p></td></tr>
+              <tr><td colSpan={6}><p className="help">No hay órdenes.</p></td></tr>
             )}
           </tbody>
         </table>
