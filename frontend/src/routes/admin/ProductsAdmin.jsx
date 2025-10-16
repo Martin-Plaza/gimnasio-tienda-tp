@@ -37,9 +37,17 @@ export default function ProductsAdmin(){
 
     try{
       if (editingId) {
-        await api(`/products/${editingId}`, { method:'PUT', body: JSON.stringify(payload) });
+        // EDITAR
+        await api(`/products/${editingId}`, {
+  method: 'PUT',
+  body: JSON.stringify(payload)
+});
       } else {
-        await api('/products', { method:'POST', body: JSON.stringify(payload) });
+        // CREAR
+        await api('/products', {
+  method: 'POST',
+  body: JSON.stringify(payload)
+});
       }
       resetForm();
       await load();
@@ -73,54 +81,47 @@ export default function ProductsAdmin(){
   };
 
   return (
-    <div className="container py-4">
-      <h1 className="mb-3">ABM Productos</h1>
+    <div>
+      <h1>ABM Productos</h1>
 
-      <form className="card shadow-sm mb-4" onSubmit={onSubmit}>
-        <div className="card-body">
-          <label className="form-label">Nombre</label>
-          <input className="form-control mb-3" value={form.name}
-                 onChange={e=>setForm(f=>({...f,name:e.target.value}))} />
+      <form className="card" onSubmit={onSubmit}>
+        <label className="label">Nombre</label>
+        <input className="input" value={form.name}
+               onChange={e=>setForm(f=>({...f,name:e.target.value}))} />
 
-          <div className="row g-3">
-            <div className="col-md-6">
-              <label className="form-label">Precio</label>
-              <input className="form-control" type="number" step="0.01" value={form.price}
-                     onChange={e=>setForm(f=>({...f,price:e.target.value}))} />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Stock</label>
-              <input className="form-control" type="number" value={form.stock}
-                     onChange={e=>setForm(f=>({...f,stock:e.target.value}))} />
-            </div>
-          </div>
+        <label className="label">Precio</label>
+        <input className="input" type="number" step="0.01" value={form.price}
+               onChange={e=>setForm(f=>({...f,price:e.target.value}))} />
 
-          <label className="form-label mt-3">Imagen (URL o /images/archivo.jpeg)</label>
-          <input className="form-control mb-3" value={form.image_url}
-                 onChange={e=>setForm(f=>({...f,image_url:e.target.value}))} />
+        <label className="label">Stock</label>
+        <input className="input" type="number" value={form.stock}
+               onChange={e=>setForm(f=>({...f,stock:e.target.value}))} />
 
-          <label className="form-label">Descripción (opcional)</label>
-          <input className="form-control mb-3" value={form.description}
-                 onChange={e=>setForm(f=>({...f,description:e.target.value}))} />
+        <label className="label">Imagen (URL o /images/archivo.jpeg)</label>
+        <input className="input" value={form.image_url}
+               onChange={e=>setForm(f=>({...f,image_url:e.target.value}))} />
 
-          {error && <p className="text-danger small mb-3">{error}</p>}
+        <label className="label">Descripción (opcional)</label>
+        <input className="input" value={form.description}
+               onChange={e=>setForm(f=>({...f,description:e.target.value}))} />
 
-          <div className="d-flex gap-2">
-            <button className="btn btn-dark">
-              {editingId ? 'Guardar cambios' : 'Crear'}
+        {error && <p className="error">{error}</p>}
+
+        <div style={{display:'flex', gap:8}}>
+          <button className="btn">
+            {editingId ? 'Guardar cambios' : 'Crear'}
+          </button>
+          {editingId && (
+            <button type="button" className="btn btn-secondary" onClick={onCancelEdit}>
+              Cancelar
             </button>
-            {editingId && (
-              <button type="button" className="btn btn-outline-secondary" onClick={onCancelEdit}>
-                Cancelar
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </form>
 
-      <h2 className="h4 mb-3">Listado</h2>
-      <table className="table table-striped align-middle">
-        <thead className="table-light">
+      <h2 style={{marginTop:16}}>Listado</h2>
+      <table className="table">
+        <thead>
           <tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
         </thead>
         <tbody>
@@ -130,19 +131,12 @@ export default function ProductsAdmin(){
               <td>{p.name}</td>
               <td>${Number(p.price).toFixed(2)}</td>
               <td>{p.stock}</td>
-              <td className="d-flex gap-2">
-                <button className="btn btn-outline-secondary btn-sm" onClick={()=>onEditStart(p)}>
-                  Modificar
-                </button>
-                <button className="btn btn-danger btn-sm" onClick={()=>onDelete(p.id)}>
-                  Eliminar
-                </button>
+              <td style={{display:'flex', gap:8, flexWrap:'wrap'}}>
+                <button className="btn" onClick={()=>onEditStart(p)}>Modificar</button>
+                <button className="btn" onClick={()=>onDelete(p.id)}>Eliminar</button>
               </td>
             </tr>
           ))}
-          {!list.length && (
-            <tr><td colSpan={5}><p className="text-muted mb-0">No hay productos.</p></td></tr>
-          )}
         </tbody>
       </table>
     </div>
