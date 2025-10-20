@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Home from './routes/Home.jsx'
-import ProductDetail from './routes/ProductDetail.jsx'
 import Cart from './routes/Cart.jsx'
 import Checkout from './routes/Checkout.jsx'
 import MyOrders from './routes/MyOrders.jsx'
@@ -15,12 +14,13 @@ import { AuthProvider } from './context/AuthContext.jsx'
 
 export default function App(){
   return (
+    //authProvider es de authcontext, provee un contexto a todas las rutas establecidas dentro de el
     <AuthProvider>
+    {/*Navbar esta fuera de Routes, que significa que se va a renderizar en todas las rutas tmb.*/}
       <Navbar />
       <div className="container">
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/producto/:id' element={<ProductDetail />} />
           <Route path='/carrito' element={<Cart />} />
           <Route path='/checkout' element={
             <ProtectedRoute><Checkout/></ProtectedRoute>

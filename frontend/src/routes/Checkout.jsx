@@ -3,24 +3,34 @@ import { api } from '../services/api.js';
 import { readCart, clearCart } from '../services/cart.js';
 import { useNavigate } from 'react-router-dom';
 
+
+// --------- CHECKEADO -------------//
+
+
+
 export default function Checkout(){
   const navigate = useNavigate();
   const [address, setAddress] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Carrito válido: adaptamos product_id → id si hace falta
+  // hacemos un condicional con el ? para verificar si es un arreglo:
+  //si es arreglo hace el map, sino guarda un arreglo vacio.
   const cart = Array.isArray(readCart())
     ? readCart().map(i => ({
-        id: i.id ?? i.product_id,    // ✅ Soporta ambas formas
+        id: i.id,
         qty: Number(i.qty),
         price: Number(i.price),
         name: i.name
       }))
     : [];
 
+
+  //de cart multiplicamos el precio por la cantidad de cada producto.
   const total = cart.reduce((s,i)=> s + i.price * i.qty, 0);
 
+
+  //si el carrito no tiene longitud se renderiza carrito vacio
   if (!cart.length) {
     return (
       <div className="container">
@@ -30,19 +40,24 @@ export default function Checkout(){
     );
   }
 
+
+  //formulario de direccion
   const submit = async (e)=>{
     e.preventDefault();
     setError(null);
+    //muestra cargando setLoading
     setLoading(true);
+    //en el bloque try arma el objeto de carrito para enviar a ordenes
     try{
       const payload = {
         address,
         items: cart.map(i => ({
-          product_id: Number(i.id),   // ✅ Usa ID real
+          product_id: Number(i.id),
           qty: Number(i.qty),
           price: Number(i.price)
         }))
       };
+      //usa POST en orders y envia el objeto en formato json, limpia el carrito y usa navigate para mis-ordenes
       await api('/orders', { method:'POST', body: JSON.stringify(payload) });
       clearCart();
       navigate('/mis-ordenes');

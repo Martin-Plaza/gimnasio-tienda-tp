@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
 
     const row = await get(
       `SELECT Id, Email, Password, Nivel, Nombre
-         FROM Usuarios
+        FROM Usuarios
         WHERE Email = ?`,
       [email]
     );
@@ -79,16 +79,17 @@ router.post('/login', async (req, res) => {
 });
 
 // ---------- WHOAMI ----------
-/**
- * GET /auth/whoami
- * header: Authorization: Bearer <token>
- */
+
 router.get('/whoami', authRequired, async (req, res) => {
-  // refrezcamos datos desde la DB por si cambió el nombre/rol
+  // esta API llama al usuario que esta solicitando
+  //authrequired valida si el token es valido y no expiró
   const row = await get(`SELECT Id, Email, Nivel, Nombre FROM Usuarios WHERE Id=?`, [req.user.id]);
+  //si no guarda nada en row no encontró al usuario
   if (!row) return res.status(404).json({ message: 'Usuario no encontrado' });
+  //guardamos en role lo que devuelve la funcion nivelToRole
   const role = nivelToRole(row.Nivel);
-  const name = row.Nombre || row.Email?.split('@')[0] || 'user';
+  //guardamos en name el nombre y mail del usuario encontrado
+  const name = row.Nombre || row.Email?.split('@')[0];
   res.json({ id: row.Id, email: row.Email, role, name });
 });
 

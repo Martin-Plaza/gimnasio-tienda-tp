@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
+
+// --------- REVISION EN PROCESO -------------//
+
+
+
+
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
@@ -15,8 +21,10 @@ export default function Login() {
     setErr(null);
     try {
       setLoading(true);
+      //este login es de usecontext
       await login( email, password );
-      nav('/'); // o a donde quieras
+      //nav que usa useNavigate al home
+      nav('/');
     } catch (e) {
       setErr(e.message || 'Error de login');
     } finally {
@@ -29,10 +37,10 @@ export default function Login() {
       <h1>Login</h1>
       <form className="card" onSubmit={submit} style={{ maxWidth: 480 }}>
         <label className="label">Email</label>
-        <input className="input" value={email} onChange={e=>setEmail(e.target.value)} required />
+        <input className="input" value={email} onChange={(e)=>setEmail(e.target.value)} required />
 
         <label className="label">Contraseña</label>
-        <input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
+        <input className="input" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} required />
 
         {err && <p className="error">{err}</p>}
         <button className="btn primary" disabled={loading} type="submit">

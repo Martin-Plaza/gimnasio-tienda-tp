@@ -1,0 +1,108 @@
+
+
+/* ===== Paleta tipo Equipamientos Fox ===== */
+:root{
+  --fx-black: #111111;         /* negro principal */
+  --fx-text:  #111111;         /* texto */
+  --fx-yellow:#F5C518;         /* amarillo acento (puedes subir a #FFD200 si querés más intenso) */
+}
+
+/* ===== Tipografía y enlaces generales ===== */
+body { color: var(--fx-text); }
+a { color: var(--fx-black); text-decoration: none; }
+a:hover { color: var(--fx-yellow); }
+
+/* ===== NAVBAR ===== */
+.navbar { border-bottom: 1px solid #eee; }
+.navbar .navbar-brand { color: var(--fx-black); font-weight: 700; }
+.navbar .navbar-brand:hover { color: var(--fx-yellow); }
+
+.navbar .nav-link{
+  color: var(--fx-black);
+  position: relative;
+  transition: color .18s ease;
+}
+.navbar .nav-link:hover{
+  color: var(--fx-yellow);
+}
+/* subrayado suave al hover */
+.navbar .nav-link::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:-.35rem; height:2px;
+  background: transparent;
+  transition: background-color .18s ease;
+}
+.navbar .nav-link:hover::after{
+  background: var(--fx-yellow);
+}
+
+/* ===== BOTONES ===== */
+/* Botón negro → amarillo en hover */
+.btn-dark,
+.btn-cta{
+  --bs-btn-color:#fff;
+  --bs-btn-bg:var(--fx-black);
+  --bs-btn-border-color:var(--fx-black);
+  --bs-btn-hover-color:var(--fx-black);
+  --bs-btn-hover-bg:var(--fx-yellow);
+  --bs-btn-hover-border-color:var(--fx-yellow);
+  --bs-btn-focus-shadow-rgb: 245,197,24; /* fx-yellow */
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .08s ease;
+}
+.btn-dark:active,
+.btn-cta:active{ transform: translateY(1px); }
+
+/* Variante contorno negro que se llena en amarillo */
+.btn-outline-dark{
+  --bs-btn-color:var(--fx-black);
+  --bs-btn-border-color:var(--fx-black);
+  --bs-btn-hover-color:var(--fx-black);
+  --bs-btn-hover-bg:var(--fx-yellow);
+  --bs-btn-hover-border-color:var(--fx-yellow);
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .08s ease;
+}
+
+/* ===== CARDS DE PRODUCTO ===== */
+.card.fx-card{
+  display: flex;              /* la card completa es un flex-col */
+  flex-direction: column;
+  height: 100%;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  border:1px solid #eaeaea;
+}
+.fx-card .card-body{
+  display: flex;              /* el body también es flex-col */
+  flex-direction: column;
+}
+.fx-actions{                  /* empuja las acciones al fondo */
+  margin-top: auto;
+}
+/* --- Botones más “botón” --- */
+.btn-dark, .btn-outline-dark{
+  border-width: 2px;          /* borde un poco más marcado */
+}
+.btn-dark{                    /* negro -> amarillo (ya definido); reforzamos altura */
+  min-height: 38px;
+}
+.btn-outline-dark{
+  min-height: 38px;
+}
+.card.fx-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.12);
+  border-color:#ddd;
+}
+
+/* Imagen con zoom leve al hover */
+.fx-card .fx-img{ overflow:hidden; }
+.fx-card .fx-img img{
+  display:block;
+  width:100%;
+  height:auto;
+  transition: transform .25s ease;
+}
+.fx-card:hover .fx-img img{ transform: scale(1.03); }
+
+/* Precio / badges opcionales */
+.fx-price{ font-weight:700; color:var(--fx-black); }
+.badge.fx-badge{ background:var(--fx-yellow); color:var(--fx-black); }
