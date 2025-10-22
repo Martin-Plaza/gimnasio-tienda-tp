@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 
+
+//----------SIN REVISAR----------//
+
+
+
+
+//FUNCION SIN REVISAR
 const roleBadge = (role = 'user') => {
   const r = String(role).toLowerCase();
   if (r === 'super-admin') return 'badge rounded-pill text-bg-warning text-dark';
@@ -9,6 +16,10 @@ const roleBadge = (role = 'user') => {
   return 'badge rounded-pill text-bg-secondary'; // user
 };
 
+
+
+
+//FUNCION SIN REVISAR
 export default function UsersAdmin(){
   const { hasRole } = useAuth();
   const [rows, setRows] = useState([]);
@@ -16,6 +27,11 @@ export default function UsersAdmin(){
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
 
+
+
+
+
+  //FUNCION SIN REVISAR
   const load = async ()=>{
     setErr(null);
     try {
@@ -31,13 +47,25 @@ export default function UsersAdmin(){
     }
   };
 
+
+
+//USEFECT SIN REVISAR
   useEffect(()=>{ load(); },[]);
 
+
+
+  //FUNCION SIN REVISAR
   const onChange = (e)=>{
     const { name, value } = e.target;
     setForm(f => ({ ...f, [name]: value }));
   };
 
+
+
+
+
+
+  //FUNCION SIN REVISAR
   const createUser = async (e)=>{
     e.preventDefault();
     setErr(null);
@@ -60,6 +88,13 @@ export default function UsersAdmin(){
     }
   };
 
+
+
+
+
+
+
+  //FUNCION SIN REVISAR
   const removeUser = async (id)=>{
     if (!hasRole('super-admin')) return alert('Solo super-admin');
     const ok = window.confirm(`¿Eliminar usuario #${id}?`);
@@ -72,6 +107,11 @@ export default function UsersAdmin(){
     }
   };
 
+
+
+
+
+//FUNCION SIN REVISAR
   const promote = async (id, role)=>{
     if (!hasRole('super-admin')) return alert('Solo super-admin');
     try{
@@ -82,6 +122,9 @@ export default function UsersAdmin(){
     }
   };
 
+
+
+  
   return (
     <div className="container py-4">
       <h1 className="mb-3">ABM Usuarios</h1>

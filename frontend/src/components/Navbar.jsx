@@ -3,12 +3,24 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { readCart } from '../services/cart.js';
 
+
+//----------SIN REVISAR----------//
+
+
+
+
+
+//FUNCION SIN REVISAR
 export default function Navbar(){
   const { user, logout, hasRole } = useAuth();
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
   const label = user ? (user.name || (user.email?.split('@')[0]) || 'user') : null;
 
+
+
+
+//USEEFECT SIN REVISAR
   useEffect(() => {
     const load = () => {
       const cart = readCart();
@@ -18,6 +30,10 @@ export default function Navbar(){
     const id = setInterval(load, 500);
     return () => clearInterval(id);
   }, []);
+
+
+
+
 
   return (
     <nav className="navbar navbar-expand-lg bg-white sticky-top">

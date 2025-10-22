@@ -2,12 +2,26 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 
+
+
+
+//----------SIN REVISAR----------//
+
+
+
+
+
+//FUNCION SIN REVISAR
 export default function ProductsAdmin(){
   const [list, setList]   = useState([]);
   const [form, setForm]   = useState({ name:'', price:'', stock:'', image_url:'', description:'' });
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null); // null = creando
 
+
+
+
+  //FUNCION SIN REVISAR
   const load = async ()=>{
     try{
       const data = await api('/products');
@@ -16,13 +30,28 @@ export default function ProductsAdmin(){
       setError(e.message || 'Error al cargar');
     }
   };
+
+
+
+  //USEEFECT SIN REVISAR
   useEffect(()=>{ load(); },[]);
 
+
+
+
+  //FUNCION SIN REVISAR
   const resetForm = ()=>{
     setForm({ name:'', price:'', stock:'', image_url:'', description:'' });
     setEditingId(null);
   };
 
+
+
+
+
+
+
+  //FUNCION SIN REVISAR
   const onSubmit = async (e)=>{
     e.preventDefault();
     setError(null);
@@ -48,6 +77,14 @@ export default function ProductsAdmin(){
     }
   };
 
+
+
+
+  
+
+
+
+  //FUNCION SIN REVISAR
   const onEditStart = (p)=>{
     setEditingId(p.id);
     setForm({
@@ -60,8 +97,15 @@ export default function ProductsAdmin(){
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+
+
+  //FUNCION SIN REVISAR
   const onCancelEdit = ()=> resetForm();
 
+
+
+
+  //FUNCION SIN REVISAR
   const onDelete = async (id)=>{
     if(!confirm(`¿Eliminar producto #${id}?`)) return;
     try{

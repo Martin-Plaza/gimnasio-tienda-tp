@@ -29,13 +29,26 @@ export const db = new sqlite3.Database(
 );
 
 // Helpers promisificados
+
+
+//FUNCION CHECKEADA
+//run espera los comandos de SQL y los parametros (en este caso es para POST de register)
 export const run = (sql, params=[]) =>
   new Promise((resolve, reject) => {
+    //devuelve una promesa para poder poder usar Await
+    //db.run ejecuta sentencias que no devuelven filas (es para INSERT, DELETE, UPDATE)
+    //db.run ademas bindea parametros (por ejemplo: INSERT "nombre", "apellido", [nombre, apellido])
     db.run(sql, params, function (err) {
       if (err) return reject(err);
+      //ademas de ejecutar (INSERT,DELETE,UPDATE) tambien cuando resuelve la promesa devuelve lastID y changes
+      //this hace referencia a la fila que se acaba de agregar
+      //lastID es el id que se acaba de agregar y changes a la cantidad de filas afectadas
       resolve({ lastID: this.lastID, changes: this.changes });
     });
   });
+
+
+
 
 export const get = (sql, params=[]) =>
   new Promise((resolve, reject) => {

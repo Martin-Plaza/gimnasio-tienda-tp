@@ -2,13 +2,20 @@ import { useEffect, useState } from 'react';
 import { api, API_URL } from '../services/api.js';
 import { readCart, saveCart } from '../services/cart.js';
 
-// --------- CHECKEADO -------------//
+// --------- MODULO CHECKEADO -------------//
 
+
+//funcion CHECKEADA
 export default function Home() {
   //products se mapea
   const [products, setProducts] = useState([]);
   const [msg, setMsg] = useState(null);
 
+
+
+  
+
+  //USEEFECT CHECKEADO
   //llama al GET de la api en products.routes.js
   useEffect(() => {
     (async () => {
@@ -18,6 +25,13 @@ export default function Home() {
     })();
   }, []);
 
+
+
+
+
+
+
+  //funcion CHECKEADA
   const addToCart = (p) => {
     const id    = p.id;
     const name  = p.name;
@@ -39,6 +53,12 @@ export default function Home() {
     setTimeout(() => setMsg(null), 1200);
   };
 
+
+
+
+
+
+  //funcion CHECKEADA
   //a imgSrc le pasamos p, que es de cada elemento de product
   const imgSrc = (p) => {
     //raw primero ve si es proveniente de url externa, luego si viene de la base de datos
@@ -51,6 +71,9 @@ export default function Home() {
   };
 
 
+
+
+  //funcion CHECKEADA
   //trim elimina los espacios en blanco
   const desc = (p) => (p.description ?? '').trim();
 

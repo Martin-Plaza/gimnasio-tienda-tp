@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom';
 
+
+
+//----------SIN REVISAR----------//
+
+
+
+//FUNCION SIN REVISAR
 export default function ProductCard({ p, onAdd }) {
   const img = p.image_url || 'https://via.placeholder.com/600x400?text=Producto';
   const price = Number(p.price).toFixed(2);
 
+
+
+
+
+  
   return (
     <div className="card fx-card h-100">
       <div className="fx-img">

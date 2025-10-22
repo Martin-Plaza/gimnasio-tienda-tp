@@ -3,24 +3,29 @@ import { api } from '../services/api.js';
 
 
 
-// --------- CHECKEADO -------------//
+// --------- MODULO CHECKEADO -------------//
 
 
-
+//funcion CHECKEADA
 const fmtDate  = (s) => {
   //convierte el parametro en Date, luego verifica si es NaN (isNaN retorna bool), si es, retorna _, si no es NaN, retorna la fecha en formato ARG.
   const d = new Date(s);
   return isNaN(d) ? '—' : d.toLocaleString('es-AR');
 };
 
+
+
+//funcion CHECKEADA
 //verifica si el parametro n es NaN, si es NaN retorna $0.00, sino n con toFixed.
 const fmtMoney = (n) => (isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`);
 
 
 
+
+
+//funcion CHECKEADA
 // Map de clases para que siempre se vea con color
 //s='' es parametro por defecto
-
 const statusBadge = (s='') => {
 //hacemos switch para que actue distinto dependiendo de lo que venga del backend desde order.routes.js
   switch (s) {
@@ -33,11 +38,15 @@ const statusBadge = (s='') => {
 };
 
 
-
+//funcion CHECKEADA
 export default function MyOrders(){
   const [rows, setRows] = useState([]);
   const [err, setErr] = useState(null);
 
+
+
+
+  //USEEFECT CHECKEADO
   useEffect(() => {
     (async () => {
       try {
@@ -61,6 +70,9 @@ export default function MyOrders(){
   }, []);
 
 
+
+
+  
   return (
     <div className="container py-4">
       <h1 className="mb-3">Mis Órdenes</h1>

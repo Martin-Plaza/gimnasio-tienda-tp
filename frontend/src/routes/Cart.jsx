@@ -4,11 +4,11 @@ import { readCart, saveCart, clearCart } from '../services/cart.js';
 
 
 
-// --------- CHECKEADO -------------//
+// --------- MODULO CHECKEADO -------------//
 
 
 
-
+//funcion CHECKEADA
 export default function Cart(){
   const [cart, setCart] = useState([]);
 
@@ -31,6 +31,10 @@ export default function Cart(){
     sync(next);
   };
 
+
+
+  
+  //funcion CHECKEADA
   //funcion para eliminar el carrito, pasandole el indice
   const removeItem = (idx)=>{
     //filtramos el arreglo y mostramos todos los productos menos el que sea igual al indice que le pasamos
@@ -40,6 +44,10 @@ export default function Cart(){
     sync(next);
   };
 
+
+
+
+  //funcion CHECKEADA
   //funcion para borrar el carrito.
   const onClear = ()=> {
     if (!confirm('¿Vaciar el carrito completo?')) return;
@@ -48,6 +56,8 @@ export default function Cart(){
   };
 
 
+
+  //funcion CHECKEADA
   //suma de cada producto el total, multiplicandolo.
   const total = cart.reduce((a,i)=> a + i.price * i.qty, 0);
 

@@ -3,11 +3,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 
-// --------- REVISION EN PROCESO -------------//
+// --------- MODULO CHECKEADO-------------//
 
 
 
 
+
+
+//funcion CHECKEADA
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
@@ -16,17 +19,23 @@ export default function Login() {
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
 
+
+
+
+  //funcion CHECKEADA
   const submit = async (e) => {
     e.preventDefault();
     setErr(null);
     try {
       setLoading(true);
       //este login es de usecontext
+      //pasamos email y password
+      //desde authcontext le agregamos un token a ese usuario al pasarle email y password
       await login( email, password );
       //nav que usa useNavigate al home
       nav('/');
     } catch (e) {
-      setErr(e.message || 'Error de login');
+      setErr(e.message);
     } finally {
       setLoading(false);
     }

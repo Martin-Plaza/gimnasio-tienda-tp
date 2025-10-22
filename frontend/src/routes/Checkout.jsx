@@ -4,16 +4,18 @@ import { readCart, clearCart } from '../services/cart.js';
 import { useNavigate } from 'react-router-dom';
 
 
-// --------- CHECKEADO -------------//
+// --------- MODULO CHECKEADO -------------//
 
 
-
+//funcion CHECKEADA
 export default function Checkout(){
   const navigate = useNavigate();
   const [address, setAddress] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+
+  //funcion CHECKEADA
   // hacemos un condicional con el ? para verificar si es un arreglo:
   //si es arreglo hace el map, sino guarda un arreglo vacio.
   const cart = Array.isArray(readCart())
@@ -26,6 +28,8 @@ export default function Checkout(){
     : [];
 
 
+
+  //funcion CHECKEADA
   //de cart multiplicamos el precio por la cantidad de cada producto.
   const total = cart.reduce((s,i)=> s + i.price * i.qty, 0);
 
@@ -39,7 +43,6 @@ export default function Checkout(){
       </div>
     );
   }
-
 
   //formulario de direccion
   const submit = async (e)=>{

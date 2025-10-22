@@ -3,26 +3,49 @@
 // --------- REVISION EN PROCESO -------------//
 
 
-
-// Devuelve el id de usuario actual (o null si anónimo)
+//funcion CHECKEADA
+// esta funcion devuelve la key currentUserId del localstorage
 export const currentUserId = () => localStorage.getItem('currentUserId');
 
-// Clave de storage según usuario
+
+
+//funcion CHECKEADA
+// cartKey guarda el currentuserID en la constante
+//si el uid es true,es decir, hay algo, devuelve cart:u:{id del usuario}, sino devuelve anonimo, es decir no hay usuario
 const cartKey = () => {
   const uid = currentUserId();
   return uid ? `cart:u:${uid}` : 'cart:anon';
 };
 
-//  Blindado: lectura segura de carrito
+
+//funcion CHECKEADA
+//readCart lee el json y lo parsea a la key correspondiente, es decir, va a devolver el json asociada a esa Key
+//si hay error devuelve arreglo vacio
 export const readCart = () => {
-  try { return JSON.parse(localStorage.getItem(cartKey()) || '[]'); }
+  try { return JSON.parse(localStorage.getItem(cartKey())); }
   catch { return []; }
 };
 
+
+
+
+//funcion CHECKEADA
+//SaveCart va a guardar en la key de localstorage cart:u:{usuario actual} el arreglo parseado a JSON
+//es decir, va a guardar el carrito con la sesion actual
 export const saveCart = (cart) => localStorage.setItem(cartKey(), JSON.stringify(cart));
+
+
+
+
+//funcion CHECKEADA
+//clearCart va a remover el carrito de ese usuario actual, en base a la key que le pasemos
 export const clearCart = () => localStorage.removeItem(cartKey());
 
 
+
+
+
+//funcion CHECKEADA
 //onUserChange setea un currentuserid en local
 //guarda la key con el usuario actual en una variable
 //verifica si esa key esta en localstorage

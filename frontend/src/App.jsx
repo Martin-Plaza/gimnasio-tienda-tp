@@ -12,6 +12,8 @@ import UsersAdmin from './routes/admin/UsersAdmin.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 
+// --------- REVISION EN PROCESO -------------//
+
 export default function App(){
   return (
     //authProvider es de authcontext, provee un contexto a todas las rutas establecidas dentro de el

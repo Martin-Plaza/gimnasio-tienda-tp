@@ -1,6 +1,11 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
+
+//----------SIN REVISAR----------//
+
+
+
 export default function ProtectedRoute({ roles = [], children }){
   const { user, loading, hasRole } = useAuth()
   if(loading) return <p className="help" style={{padding:16}}>Cargando...</p>

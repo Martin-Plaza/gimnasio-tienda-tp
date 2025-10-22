@@ -1,13 +1,25 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api.js';
 
+
+
+
+//-------SIN REVISAR---------//
+
+
+
+
+//FUNCION SIN REVISAR
 const fmtDate = (s) => {
   const d = new Date(s);
   return isNaN(d) ? 'Invalid Date' : d.toLocaleString('es-AR');
 };
 const fmtMoney = (n) => (isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`);
 
-// badge con color por estado
+
+
+
+//FUNCION SIN REVISAR
 const statusBadge = (s='') => {
   const k = String(s).toLowerCase();
   switch (k) {
@@ -19,11 +31,18 @@ const statusBadge = (s='') => {
   }
 };
 
+
+
+//FUNCION SIN REVISAR
 export default function OrdersAdmin(){
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
+  
 
+
+
+  //FUNCION SIN REVISAR
   const load = async ()=>{
     setErr(null);
     setLoading(true);
@@ -45,8 +64,15 @@ export default function OrdersAdmin(){
     }
   };
 
+
+
+  //USEEFECT SIN REVISAR
   useEffect(()=>{ load(); },[]);
 
+
+
+
+//FUNCION SIN REVISAR
   const setStatus = async (id, status)=>{
     try{
       await api(`/orders/${id}/status`, {
@@ -59,6 +85,10 @@ export default function OrdersAdmin(){
     }
   };
 
+
+
+
+//FUNCION SIN REVISAR
   const removeOrder = async (id)=>{
     const ok = window.confirm(`¿Eliminar la orden #${id}? Esta acción no se puede deshacer.`);
     if(!ok) return;
