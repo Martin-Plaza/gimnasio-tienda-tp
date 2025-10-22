@@ -9,20 +9,25 @@ import { api } from '../../services/api.js';
 
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
+//convierte el parametro en Date, luego verifica si es NaN (isNaN retorna bool), si es, retorna _, si no es NaN, retorna la fecha en formato ARG.
 const fmtDate = (s) => {
   const d = new Date(s);
   return isNaN(d) ? 'Invalid Date' : d.toLocaleString('es-AR');
 };
+
+//FUNCION CHECKEADA
+////verifica si el parametro n es NaN, si es NaN retorna $0.00, sino n con toFixed.
 const fmtMoney = (n) => (isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`);
 
 
 
 
-//FUNCION SIN REVISAR
+// Case de clases para que siempre se vea con color, para el map del return
+//s='' es parametro por defecto
 const statusBadge = (s='') => {
-  const k = String(s).toLowerCase();
-  switch (k) {
+  //hacemos switch para que actue distinto dependiendo de lo que venga del backend desde order.routes.js
+  switch (s) {
     case 'paid':     return 'badge rounded-pill text-bg-success';
     case 'shipped':  return 'badge rounded-pill text-bg-info';
     case 'canceled': return 'badge rounded-pill text-bg-danger';
@@ -41,21 +46,24 @@ export default function OrdersAdmin(){
   
 
 
-
-  //FUNCION SIN REVISAR
+//FUNCION CHECKEADA
+//la funcion load setea todas las filas haciendo llamada a la api de /orders
   const load = async ()=>{
     setErr(null);
     setLoading(true);
     try{
+      //en data guardamos el get de /orders, proveniente de orders.routes, que es un json
       const data = await api('/orders');
+      //mapeamos data dentro de la constante fixed
       const fixed = data.map(o => ({
-        id:        o.id ?? o.Id,
-        user_id:   o.user_id ?? o.UsuarioId,
-        user_email:o.user_email ?? o.Email ?? o.email ?? null,
-        date:      o.date ?? o.Fecha,
-        status:    (o.status ?? o.Status) || 'pending',
-        total:     o.total ?? o.Monto,
+        id:        o.id,
+        user_id:   o.user_id,
+        user_email:o.user_email,
+        date:      o.date,
+        status:    (o.status) || 'pending',
+        total:     o.total,
       }));
+      //seteamos rows con fixed
       setRows(fixed);
     }catch(e){
       setErr(e.message);
@@ -66,7 +74,8 @@ export default function OrdersAdmin(){
 
 
 
-  //USEEFECT SIN REVISAR
+  //USEEFECT CHECKEADO
+  //cuando cargamos todo el modulo se ejecuta una vez load, como no especifica el methodo, es GET
   useEffect(()=>{ load(); },[]);
 
 

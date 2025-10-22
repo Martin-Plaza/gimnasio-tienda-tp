@@ -82,35 +82,18 @@ const orderId = ins.lastID;
 router.get('/mine', authRequired, async (req, res) => {
   const rows = await all(
     `SELECT p.Id AS id, p.Fecha AS date, p.Monto AS total, p.Status AS status
-       FROM Pedidos p
+      FROM Pedidos p
       WHERE p.UsuarioId = ?
       ORDER BY p.Id DESC`, [req.user.id]
   );
   res.json(rows);
 });
 
-// Listado admin con email del usuario (y filtros)
-router.get('/', authRequired, roleRequired('admin','super-admin'), async (req, res) => {
-  const { q, from, to } = req.query;
+//hacemos un get a /orders, y esta api es llamada desde OrdersAdmin
+//para ejecutarse la promesa requiere los midleware autenticacion y rol (authRequired y roleRequired)
+router.get('/', authRequired, roleRequired('admin','super-admin'), async (res) => {
 
-  const params = [];
-  let where = '1=1';
-
-  // Filtro por usuario (id o email)
-  if (q) {
-    if (/^\d+$/.test(q)) {           // si es número: por UsuarioId
-      where += ' AND p.UsuarioId = ?';
-      params.push(Number(q));
-    } else {                         // si es texto: por Email
-      where += ' AND u.Email LIKE ?';
-      params.push(`%${q}%`);
-    }
-  }
-
-  // Filtros de fecha (ISO yyyy-mm-dd)
-  if (from) { where += ' AND date(p.Fecha) >= date(?)'; params.push(from); }
-  if (to)   { where += ' AND date(p.Fecha) <= date(?)'; params.push(to);   }
-
+  // en rows guardaremos la consulta de la funcion sincronica all, proveniente de db.js
   const rows = await all(
     `SELECT
         p.Id        AS id,
@@ -119,13 +102,11 @@ router.get('/', authRequired, roleRequired('admin','super-admin'), async (req, r
         p.Fecha     AS date,
         p.Status    AS status,
         p.Monto     AS total
-     FROM Pedidos p
-     LEFT JOIN Usuarios u ON u.Id = p.UsuarioId
-     WHERE ${where}
-     ORDER BY p.Id DESC`,
-    params
+    FROM Pedidos p
+    LEFT JOIN Usuarios u ON u.Id = p.UsuarioId
+    ORDER BY p.Id DESC`
   );
-
+  
   res.json(rows);
 });
 

@@ -30,7 +30,6 @@ export const db = new sqlite3.Database(
 
 // Helpers promisificados
 
-
 //FUNCION CHECKEADA
 //run espera los comandos de SQL y los parametros (en este caso es para POST de register)
 export const run = (sql, params=[]) =>
@@ -49,18 +48,24 @@ export const run = (sql, params=[]) =>
 
 
 
-
-export const get = (sql, params=[]) =>
+//FUNCION CHECKEADA
+export const get = (sql) =>
   new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
+    //db.get trae una sola fila (la primera)
+    //err es el error, y si es exitosa la consulta resuelve en row, que es lo que va a traer desde la db
+    db.get(sql,(err, row) => {
       if (err) return reject(err);
       resolve(row);
     });
   });
 
-export const all = (sql, params=[]) =>
+//FUNCION CHECKEADA
+export const all = (sql) =>
   new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
+    //db.all ejecuta un select
+    //le pasamos desde orders.routes la consulta
+    //err es el error, y si es exitosa la consulta resuelve en rows, que es lo que va a traer desde la db
+    db.all(sql, (err, rows) => {
       if (err) return reject(err);
       resolve(rows);
     });

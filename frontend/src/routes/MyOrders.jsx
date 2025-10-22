@@ -24,7 +24,7 @@ const fmtMoney = (n) => (isNaN(Number(n)) ? '$0.00' : `$${Number(n).toFixed(2)}`
 
 
 //funcion CHECKEADA
-// Map de clases para que siempre se vea con color
+// Case de clases para que siempre se vea con color, para el map del return
 //s='' es parametro por defecto
 const statusBadge = (s='') => {
 //hacemos switch para que actue distinto dependiendo de lo que venga del backend desde order.routes.js
