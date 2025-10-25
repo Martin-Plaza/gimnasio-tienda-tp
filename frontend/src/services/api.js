@@ -35,16 +35,20 @@ export async function api(path, options = {}) {
     body: options.body
   });
 
+
   if (!res.ok) {
-    //txt lee el cuerpo res como texto
-    const txt = await res.text();
-    //guardamos el status de la respuesta en texto
-    let msg = res.statusText;
-    //tratamos de pisar msg con el json que podria enviar, sino lee statustext
-    try { msg = JSON.parse(txt).message || msg; }
-    //si nada funciona lanza un objeto error
-    catch {throw new Error(msg);}
-    
+    //trata de leer el cuerpo de la respuesta
+    const txt = await res.text().catch(() => '');
+    //guarda el status de la respuesta
+    let msg = res.statusText || 'Error';
+    try {
+      //analiza si hay cuerpo en res, si hay parsea txt, sino devuelve null
+      const j = txt ? JSON.parse(txt) : null;
+      //si hay guarda en msg el cuerpo en msj, sino deja el status o 'error'
+      msg = (j && j.message) || msg;
+    } catch {}
+    throw new Error(msg);        
   }
+
   return res.json();
 }

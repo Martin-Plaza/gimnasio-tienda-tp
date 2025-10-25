@@ -1,24 +1,27 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
+
+
+/*-------------MODULO CHECKEADO----------------*/
+
+
+
+
 
 sqlite3.verbose();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url); //ruta actual
+const __dirname  = path.dirname(__filename); //ruta completa
 
-// ⚠️ Ruta fija y estable: backend/src/data/gym.db
+// Ruta fija y estable: backend/src/data/gym.db
 const DB_DIR  = path.resolve(__dirname, '../data');
 const DB_PATH = path.join(DB_DIR, 'gym.db');
 
-// Crear carpeta si falta (evita SQLITE_CANTOPEN)
-if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
-
-// Abrir DB con CREATE por si no existe el archivo
+// Abrir la DB
 export const db = new sqlite3.Database(
   DB_PATH,
-  sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+  sqlite3.OPEN_READWRITE,
   (err) => {
     if (err) {
       console.error(`[SQLite] No se pudo abrir: ${DB_PATH}\n`, err);
@@ -49,23 +52,23 @@ export const run = (sql, params=[]) =>
 
 
 //FUNCION CHECKEADA
-export const get = (sql) =>
+export const get = (sql, params = []) =>
   new Promise((resolve, reject) => {
     //db.get trae una sola fila (la primera)
     //err es el error, y si es exitosa la consulta resuelve en row, que es lo que va a traer desde la db
-    db.get(sql,(err, row) => {
+    db.get(sql,params, (err, row) => {
       if (err) return reject(err);
       resolve(row);
     });
   });
 
 //FUNCION CHECKEADA
-export const all = (sql) =>
+export const all = (sql, params =[]) =>
   new Promise((resolve, reject) => {
     //db.all ejecuta un select
     //le pasamos desde orders.routes la consulta
     //err es el error, y si es exitosa la consulta resuelve en rows, que es lo que va a traer desde la db
-    db.all(sql, (err, rows) => {
+    db.all(sql,params,(err, rows) => {
       if (err) return reject(err);
       resolve(rows);
     });

@@ -4,13 +4,13 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { readCart } from '../services/cart.js';
 
 
-//----------SIN REVISAR----------//
+//----------MODULO CHECKCEADO----------//
 
 
 
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
 export default function Navbar(){
   const { user, logout, hasRole } = useAuth();
   const [cartCount, setCartCount] = useState(0);
@@ -20,13 +20,17 @@ export default function Navbar(){
 
 
 
-//USEEFECT SIN REVISAR
+//USEEFECT CHECKEADO
   useEffect(() => {
     const load = () => {
+      //leemos si hay carrito
       const cart = readCart();
+      //setCartCount guarda el numero de productos y lo setea
       setCartCount(cart.reduce((a, i) => a + Number(i.qty || 0), 0));
     };
+    //corremos load
     load();
+    //set interval vuelve a leer load cada 500 ms, mientras navbar este montado, para leer el carrito y actualizarlo
     const id = setInterval(load, 500);
     return () => clearInterval(id);
   }, []);

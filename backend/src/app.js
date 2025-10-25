@@ -1,22 +1,31 @@
 // backend/src/app.js
+
+//express es una libreria de node para crear el servidor, definir rutas y midlewares
 import express from 'express';
+//cors es un midleware para permitir/limitar solicitudes al servidor desde otros origenes (frontend), da seguridad
 import cors from 'cors';
+//para contruir rutas
 import path from 'path';
+//fs es un modulo de sistema de archivos: lee y escribe archivos, verifica existencia, lista directorios (carpetas)
 import fs from 'fs';
+//me dice exactamente donde estoy parado
 import { fileURLToPath } from 'url';
 
+//importamos todas las rutas que usaremos
 import authRoutes from './routes/auth.routes.js';
 import productsRoutes from './routes/products.routes.js';
 import ordersRoutes from './routes/orders.routes.js';
 import usersRoutes from './routes/users.routes.js';
 
+//filename es la ruta actual de app.js
 const __filename = fileURLToPath(import.meta.url);
+//dirname es la carpeta de app.js 
 const __dirname  = path.dirname(__filename);
 
+//express() crea una instancia de la aplicacion express, esta instancia es el objeto "app"
+//app tiene metodos (app.get, app.post), registra midlewares(app.use()), etc.
+//finalmente inicia el servidor con app.listen en server.js
 const app = express();
-
-// Log simple
-app.use((req,res,next)=>{ console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`); next(); });
 
 // CORS
 app.use(cors({
@@ -25,29 +34,21 @@ app.use(cors({
   allowedHeaders: ['Content-Type','Authorization'],
 }));
 
+//app.use es un metodo y express.json es un midleware. este midleware convierte a objeto JS los json que llegan en las peticiones
+//detecta si Content-type es aplication/json y parsea las peticiones que vienen en json, luego lo guarda en req.body
 app.use(express.json());
 
-// ---- Static: /public e /images ----
+//rutas absolutas a las carpetas images y public
+//path.join simplemente concatena rutas, dirname con public, tambien con images
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const IMAGES_DIR = path.join(PUBLIC_DIR, 'images');
 
-console.log('[STATIC] PUBLIC_DIR =', PUBLIC_DIR, 'exists:', fs.existsSync(PUBLIC_DIR));
-console.log('[STATIC] IMAGES_DIR =', IMAGES_DIR, 'exists:', fs.existsSync(IMAGES_DIR));
+//el midleware express.static sirve desde el disco duro las rutas
+app.use(express.static(PUBLIC_DIR));            
+app.use('/images', express.static(IMAGES_DIR));
 
-app.use(express.static(PUBLIC_DIR));            // sirve /images/* también
-app.use('/images', express.static(IMAGES_DIR)); // explícito
 
-// Debug opcional: listar imágenes
-app.get('/images/_ls', (_req,res)=>{
-  try { res.json({ dir: IMAGES_DIR, files: fs.readdirSync(IMAGES_DIR) }); }
-  catch(e){ res.status(500).json({ error: e.message, dir: IMAGES_DIR }); }
-});
-// -----------------------------------
-
-// Health
-app.get('/health', (_req,res)=>res.json({ ok:true }));
-
-// Rutas API
+// Rutas API que llamaremos despues
 app.use('/auth', authRoutes);
 app.use('/products', productsRoutes);
 app.use('/orders', ordersRoutes);

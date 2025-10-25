@@ -1,6 +1,6 @@
 
 
-// --------- REVISION EN PROCESO -------------//
+// --------- MODULO CHECKEADO -------------//
 
 
 //funcion CHECKEADA
@@ -20,10 +20,16 @@ const cartKey = () => {
 
 //funcion CHECKEADA
 //readCart lee el json y lo parsea a la key correspondiente, es decir, va a devolver el json asociada a esa Key
-//si hay error devuelve arreglo vacio
+//si no hay carrito devuelve arreglo vacio
 export const readCart = () => {
-  try { return JSON.parse(localStorage.getItem(cartKey())); }
-  catch { return []; }
+  try {
+    const raw = localStorage.getItem(cartKey());
+    if (!raw) return [];
+    const parsed = JSON.parse(raw); 
+    return parsed;}
+    catch{
+      return [];
+    }
 };
 
 

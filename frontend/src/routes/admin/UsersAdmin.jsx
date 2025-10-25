@@ -8,7 +8,8 @@ import { useAuth } from '../../context/AuthContext.jsx';
 
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
+//rolebadge devuelve el color del rol del usuario en usersAdmin, por defecto es role user, pero le pasamos role por parametros
 const roleBadge = (role = 'user') => {
   const r = String(role).toLowerCase();
   if (r === 'super-admin') return 'badge rounded-pill text-bg-warning text-dark';
@@ -31,16 +32,21 @@ export default function UsersAdmin(){
 
 
 
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
+  //cargamos todos los usuarios
   const load = async ()=>{
+    //seteamos error a null
     setErr(null);
     try {
+      //llamamos a la api /users, que es un get (select) de todos los usuarios en users.routes
+      //lo guardamos en data
       const data = await api('/users');
+      //hacemos un map de data (todos los usuarios) y lo guardamos en rows, para renderizado
       setRows(data.map(u => ({
-        id:    u.id ?? u.Id,
-        name:  u.name ?? u.Nombre,
-        email: u.email ?? u.Email,
-        role:  u.role ?? u.Rol ?? u.Nivel
+        id:    u.id,
+        name:  u.name,
+        email: u.email,
+        role:  u.role
       })));
     } catch(e) {
       setErr(e.message);
@@ -49,12 +55,15 @@ export default function UsersAdmin(){
 
 
 
-//USEFECT SIN REVISAR
+//USEFECT CHECKEADO
+//luego de cargar el modulo corremos load
   useEffect(()=>{ load(); },[]);
 
 
 
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
+  //este onchange maneja todos los inputs
+  //captura name y value del evento y setea el form, copiando ...f y sobreescribe el value
   const onChange = (e)=>{
     const { name, value } = e.target;
     setForm(f => ({ ...f, [name]: value }));
@@ -62,24 +71,30 @@ export default function UsersAdmin(){
 
 
 
-
-
-
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
   const createUser = async (e)=>{
+    //captura el evento del boton createuser
     e.preventDefault();
+    //seteamos el error a null
     setErr(null);
+    //string de cargando
     setLoading(true);
     try{
+      //si no es el rol indicado lanza un objeto error 
       if (!hasRole('super-admin')) throw new Error('Solo super-admin puede crear usuarios');
+      //guardamos el payload un objeto con los value capturados en los inputs
       const payload = {
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
         role: form.role
       };
+      //guardamos en u la llamada a la api con metodo post
       const u = await api('/users', { method:'POST', body: JSON.stringify(payload) });
+      //seteamos en rows
+      //copiamos el usuario creado con spread operator (...rs)
       setRows(rs => [{ id:u.id, name:u.name, email:u.email, role:u.role }, ...rs]);
+      //seteamos los campos de form a vacio
       setForm({ name:'', email:'', password:'', role:'user' });
     }catch(e){
       setErr(e.message || 'No se pudo crear el usuario');
@@ -94,13 +109,18 @@ export default function UsersAdmin(){
 
 
 
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
+  //le pasamos por parametro el id que queremos borrar
   const removeUser = async (id)=>{
+    //si el rol no es el indicado retorna alert
     if (!hasRole('super-admin')) return alert('Solo super-admin');
+    //si es superadmin envia modal
     const ok = window.confirm(`¿Eliminar usuario #${id}?`);
     if (!ok) return;
     try{
+      //si es true el modal hace una llamada a la api /users/:id metodo delete
       await api(`/users/${id}`, { method:'DELETE' });
+      //setea las filas (rows), filtrando todas las filas menos el que acabamos de borrar por id
       setRows(rs => rs.filter(r => r.id !== id));
     }catch(e){
       alert(e.message || 'Error al eliminar');
@@ -111,11 +131,17 @@ export default function UsersAdmin(){
 
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
+//promote cambia el rol del usuario
+//le pasamos por parametro el id y el rol
   const promote = async (id, role)=>{
+    //si no es el rol indicado retornamos alert
     if (!hasRole('super-admin')) return alert('Solo super-admin');
     try{
+      //llamamos a la api /users/:id/role con metodo put, y le pasamos el rol
       await api(`/users/${id}/role`, { method:'PUT', body: JSON.stringify({ role }) });
+      //seteamos el rol del usuario buscando por id, una vez que lo encontramos copiamos todo ese usuario con spread operator
+      //y luego sobrescribimos role
       setRows(rs => rs.map(r => r.id === id ? { ...r, role } : r));
     }catch(e){
       alert(e.message || 'Error al cambiar rol');

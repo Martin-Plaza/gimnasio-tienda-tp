@@ -5,7 +5,7 @@ import { onUserChange } from '../services/cart.js';
 
 
 
-// --------- REVISION EN PROCESO -------------//
+// --------- MODULO CHECKEADO -------------//
 
 
 
@@ -15,12 +15,9 @@ const AuthCtx = createContext(null);
 export const useAuth = () => useContext(AuthCtx);
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-
-
-
 
 
   //USEEFECT CHECKEADO
@@ -53,19 +50,25 @@ export function AuthProvider({ children }) {
 
 
 
-
+  //FUNCION CHECKEADA
+  //hasRole recibe un parametro ...roles, que es parametro rest
+  //...roles es un arreglo con los parametros que le enviamos
   const hasRole = (...roles) => {
+    //si no hay usuario en el estado retorna falso
   if (!user) return false;
-  const r = String(user.role || '').toLowerCase();
-  const wants = roles.map(x => String(x).toLowerCase());
+  //en r guardamos el rol del usuario actual
+  const r = String(user.role);
 
-  if (r === 'super-admin' || r === 'superadmin') {
-    return wants.includes('super-admin') || wants.includes('superadmin') || wants.includes('admin') || wants.includes('user');
+  //si el rol igual a super-admin puede cumplir con cualquiera de los 3 roles
+  if (r === 'super-admin') {
+    return roles.includes('super-admin')|| roles.includes('admin') || roles.includes('user');
   }
+  //si el rol es igual a admin puede cumplir con admin y user
   if (r === 'admin') {
-    return wants.includes('admin') || wants.includes('user');
+    return roles.includes('admin') || roles.includes('user');
   }
-  return wants.includes('user') || wants.length === 0;
+  //si el rol es user solo puede cumplir ese rol
+  return roles.includes('user') || roles.length === 0;
 };
 
 
@@ -76,6 +79,7 @@ export function AuthProvider({ children }) {
 
 //funcion CHECKEADA
   const login = async (email, password) => {
+    localStorage.removeItem('token');
     //guardamos en u lo devuelto en la ruta login metodo post
     //const u contiene el ojbeto con usuario y su token (que esta en el body), y el metodo
     //la api /login viene de auth.routes.js en el backend

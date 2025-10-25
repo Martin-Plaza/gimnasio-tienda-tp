@@ -4,7 +4,7 @@ import { api } from '../../services/api.js';
 
 
 
-//-------SIN REVISAR---------//
+//-------MODULO CHECKEADO---------//
 
 
 
@@ -38,7 +38,7 @@ const statusBadge = (s='') => {
 
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
 export default function OrdersAdmin(){
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -81,13 +81,17 @@ export default function OrdersAdmin(){
 
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
   const setStatus = async (id, status)=>{
     try{
+      //llamamos a id/status , que viene de orders.routes.js
       await api(`/orders/${id}/status`, {
         method: 'PUT',
+        //creamos el objeto y guardamos en body el json con status
         body: JSON.stringify({ status })
       });
+      //seteamos en las filas el status que estaba antes y le hacemos spread operator para copiar todo lo que estaba antes
+      //sino lo deja igual a r
       setRows(rs => rs.map(r => r.id === id ? { ...r, status } : r));
     }catch(e){
       alert(e.message || 'Error al actualizar estado');
@@ -97,12 +101,16 @@ export default function OrdersAdmin(){
 
 
 
-//FUNCION SIN REVISAR
+//FUNCION CHECKEADA
   const removeOrder = async (id)=>{
+    //abrimos un modal para verificar que se quiere eliminar
     const ok = window.confirm(`¿Eliminar la orden #${id}? Esta acción no se puede deshacer.`);
+    //si no confirmas no pasa nada.
     if(!ok) return;
     try{
+      //si se confirma hace llamada a orders.routes.js DELETE
       await api(`/orders/${id}`, { method:'DELETE' });
+      //setea las filas haciendo filter, para que no se muestre mas
       setRows(rs => rs.filter(r => r.id !== id));
     }catch(e){
       alert(e.message || 'No se pudo eliminar la orden');

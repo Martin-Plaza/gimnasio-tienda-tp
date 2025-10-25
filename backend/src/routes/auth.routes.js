@@ -12,8 +12,13 @@ const router = Router();
 
 
 
-// --------- REVISION EN PROCESO -------------//
+// --------- MODULO CHECKEADO -------------//
 
+
+/*NOTA:
+auth.routes a diferencia de orders.routes y product.routes, posee las consultas aca 
+y no separadas en los modulos models (all, byID, etc)
+*/
 
 
 
@@ -26,7 +31,7 @@ const signToken = (payload) => jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' }
 
 
 
-
+//POST CHECKEADO
 //ruta de register con metodo POST (crear un nuevo usuario en la DB)
 router.post('/register', async (req, res) => {
   try {
@@ -72,8 +77,7 @@ router.post('/register', async (req, res) => {
 
 
 
-//funcion CHECKEADA
-
+//POST CHECKEADO
 router.post('/login', async (req, res) => {
   try {
     //guardamos el body de la request, si no alguno de los dos no tiene nada entra el if
@@ -115,8 +119,7 @@ router.post('/login', async (req, res) => {
 
 
 
-//funcion CHECKEADA
-
+//GET CHECKEADO
 router.get('/whoami', authRequired, async (req, res) => {
   // esta API llama al usuario que esta solicitando
   //authrequired valida si el token es valido y no expiró

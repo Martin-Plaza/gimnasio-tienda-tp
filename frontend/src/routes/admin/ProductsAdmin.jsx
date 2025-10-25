@@ -5,7 +5,7 @@ import { api } from '../../services/api.js';
 
 
 
-//----------SIN REVISAR----------//
+//----------MODULO CHECKEADO ---------//
 
 
 
@@ -21,9 +21,11 @@ export default function ProductsAdmin(){
 
 
 
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
+  //load hace la llamada a la api products y renderiza todos en productsadmin
   const load = async ()=>{
     try{
+      //guardamos en data la llamada a la api, que viene de la ruta products.routes, y que viene de la llamada a la db product.js
       const data = await api('/products');
       setList(Array.isArray(data) ? data : data.products || []);
     }catch(e){
@@ -33,13 +35,17 @@ export default function ProductsAdmin(){
 
 
 
-  //USEEFECT SIN REVISAR
+  //USEEFECT CHECKEADO
+  //llama a load una vez
   useEffect(()=>{ load(); },[]);
 
 
 
 
-  //FUNCION SIN REVISAR
+
+
+  //FUNCION CHECKEADA
+  //resetForm resetea el form a vacio cada campo cuando enviamos el form (apretamos el boton)
   const resetForm = ()=>{
     setForm({ name:'', price:'', stock:'', image_url:'', description:'' });
     setEditingId(null);
@@ -49,13 +55,12 @@ export default function ProductsAdmin(){
 
 
 
-
-
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
   const onSubmit = async (e)=>{
     e.preventDefault();
     setError(null);
-
+    //payload es un objeto con todos los atributos del objeto, proveniente de los campos del formulario
+    //armamos para actualizar
     const payload = {
       name: form.name,
       price: Number(form.price),
@@ -63,14 +68,17 @@ export default function ProductsAdmin(){
       image_url: form.image_url || '',
       description: form.description || ''
     };
-
     try{
+      //si editingId no es null (inicia como null) hacemos PUT a la DB
       if (editingId) {
+        //le agregamos el json de payload con PUT (actualizar), a products.routes
         await api(`/products/${editingId}`, { method:'PUT', body: JSON.stringify(payload) });
       } else {
         await api('/products', { method:'POST', body: JSON.stringify(payload) });
       }
+      //reseteamos el form
       resetForm();
+      //ejecutamos nuevamente load para que aparezca el actualizado
       await load();
     }catch(err){
       setError(err.message || 'Error guardando');
@@ -84,9 +92,11 @@ export default function ProductsAdmin(){
 
 
 
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
   const onEditStart = (p)=>{
+    //guardamos en editingId el id seleccionado del producto
     setEditingId(p.id);
+    //seteamos el form con todos los campos del producto seleccionado, si no tiene lo dejamos vacio
     setForm({
       name: p.name ?? '',
       price: p.price ?? '',
@@ -94,22 +104,28 @@ export default function ProductsAdmin(){
       image_url: p.image_url ?? '',
       description: p.description ?? ''
     });
+    //hacemos un scroll hasta el inicio con top 0
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
 
 
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
+  //si cancelamos la edicion se resetea el form
   const onCancelEdit = ()=> resetForm();
 
 
 
 
-  //FUNCION SIN REVISAR
+  //FUNCION CHECKEADA
   const onDelete = async (id)=>{
+    //le pasamos a onDelete el parametro del id
+    //si el modal es false no lo elimina, no hace nada.
     if(!confirm(`¿Eliminar producto #${id}?`)) return;
     try{
+      //si es true el modal llama a la ruta products.routes, metodoo delete
       await api(`/products/${id}`, { method:'DELETE' });
+      //carga nuevamente todos los productos con load
       await load();
     }catch(err){
       setError(err.message || 'Error eliminando');

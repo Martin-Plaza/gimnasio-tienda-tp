@@ -1,30 +1,37 @@
 import { get } from '../config/db.js';
 
+//guardamos el string del usuario por su rol
 const nivelToRole = (n) => (n == 3 ? 'super-admin' : n == 2 ? 'admin' : 'user');
 
-export default function roleRequired(...allowedRoles) {
-  const wants = allowedRoles.map(r => String(r).toLowerCase());
+//autenticamos el rol del usuario. allowedroles es un arreglo con los parametros que le pasemos
+//por eso esta con spread operator
+export default function roleRequired(...roles) {
+  //pasamos request, respuesta y midleware siguiente (next)
   return async (req, res, next) => {
     try {
+      //si no hay id del usuario en la request, retornamos unauthorized
       if (!req.user?.id) return res.status(401).json({ message: 'Unauthorized' });
 
-      // Leer rol real desde la DB (siempre fresco)
+      //guardamos en row el select filtrado por el usuario, y le pasamos el parametro
       const row = await get(`SELECT Nivel FROM Usuarios WHERE Id = ?`, [req.user.id]);
+      //si no se guardo nada, quiere decir que no encontro nada
       if (!row) return res.status(401).json({ message: 'Usuario no encontrado' });
-      const role = nivelToRole(row.Nivel).toLowerCase();
+      //guardamos el rol del usuario (el string)
+      const role = nivelToRole(row.Nivel);
 
-      // Jerarquía: super-admin ≥ admin ≥ user
+      //guardamos en can un booleano de includes, en este verificamos (cuando le pasamos el rol) cual es
+      //si es superadmin tiene poder de superadmin, admin y usuario
       const can =
         role === 'super-admin'
-          ? wants.includes('super-admin') || wants.includes('admin') || wants.includes('user')
+          ? roles.includes('super-admin') || roles.includes('admin') || roles.includes('user')
+                //si es admin tiene poder de admin, admin y usuario
           : role === 'admin'
-            ? wants.includes('admin') || wants.includes('user')
-            : wants.includes('user') || wants.length === 0;
+            ? roles.includes('admin') || roles.includes('user')
+                  //si es usuario, solo tiene poder de usuario
+            : roles.includes('user') || roles.length === 0;
 
       if (!can) return res.status(403).json({ message: 'Forbidden' });
-
-      // opcional: exponer el rol real por si lo querés usar después
-      req.user.role = role;
+      //pasamos al siguiente midleware con next
       next();
     } catch (e) {
       res.status(500).json({ message: e.message });
